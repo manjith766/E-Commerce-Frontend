@@ -1,6 +1,4 @@
 import * as React from "react";
-
-import MailIcon from "@mui/icons-material/Mail";
 import DrawerList from "../../../admin seller/components/drawerList/DrawerList";
 import { AccountBox } from "@mui/icons-material";
 import LogoutIcon from '@mui/icons-material/Logout';

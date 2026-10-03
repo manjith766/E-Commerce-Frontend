@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../Redux Toolkit/Store";
 import {
   Alert,
   Avatar,
@@ -62,7 +62,7 @@ const Profile = () => {
     if (sellers.profileUpdated || sellers.error) {
       setOpenSnackbar(true);
     }
-  }, [sellers.profileUpdated]);
+  }, [sellers.profileUpdated, sellers.error]);
 
   return (
     <div className="lg:p-20 space-y-20">

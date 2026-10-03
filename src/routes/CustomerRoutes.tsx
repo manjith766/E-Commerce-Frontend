@@ -6,7 +6,6 @@ import ProductDetails from '../customer/pages/Products/ProductDetails/ProductDet
 import Cart from '../customer/pages/Cart/Cart'
 import Address from '../customer/pages/Checkout/AddressPage'
 import Profile from '../customer/pages/Account/Profile'
-import BecomeSeller from '../customer/pages/BecomeSeller/BecomeSeller'
 import Footer from '../customer/components/Footer/Footer'
 import Navbar from '../customer/components/Navbar/Navbar'
 import NotFound from '../customer/pages/NotFound/NotFound'
@@ -18,18 +17,17 @@ import Reviews from '../customer/pages/Review/Reviews'
 import WriteReviews from '../customer/pages/Review/WriteReview'
 import Wishlist from '../customer/pages/Wishlist/Wishlist'
 import { getWishlistByUserId } from '../Redux Toolkit/Customer/WishlistSlice'
-import ChatBot from '../customer/pages/ChatBot/ChatBot'
 import SearchProducts from '../customer/pages/Search/SearchProducts'
 
 
 const CustomerRoutes = () => {
   const dispatch = useAppDispatch()
-    const { cart, auth } = useAppSelector(store => store);
+    const { auth } = useAppSelector(store => store);
 
     useEffect(() => {
         dispatch(fetchUserCart(localStorage.getItem("jwt") || ""))
         dispatch(getWishlistByUserId())
-    }, [auth.jwt])
+    }, [auth.jwt, dispatch])
   return (
     <>
       <Navbar />

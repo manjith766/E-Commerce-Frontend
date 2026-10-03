@@ -42,6 +42,7 @@ const BusinessDetailsForm = ({ onClose }: UpdateDetailsFormProps) => {
         accountStatus: sellers.profile?.accountStatus ?? "",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sellers.profile]);
 
   return (

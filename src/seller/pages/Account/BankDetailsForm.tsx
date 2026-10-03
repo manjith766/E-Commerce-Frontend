@@ -43,6 +43,7 @@ const BankDetailsForm = ({ onClose }: UpdateDetailsFormProps) => {
         ifscCode: sellers.profile.bankDetails?.ifscCode || "",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sellers.profile]);
 
   return (

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import {
   TextField,
   Button,
@@ -19,7 +18,6 @@ import "tailwindcss/tailwind.css";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
 import { mainCategory } from "../../../data/category/mainCategory";
-import { isTemplateMiddle } from "typescript";
 import { menLevelTwo } from "../../../data/category/level two/menLevelTwo";
 import { womenLevelTwo } from "../../../data/category/level two/womenLevelTwo";
 import { menLevelThree } from "../../../data/category/level three/menLevelThree";
@@ -51,34 +49,10 @@ const categoryThree: { [key: string]: any[] } = {
   electronics: electronicsLevelThree,
 };
 
-const validationSchema = Yup.object({
-  title: Yup.string()
-    .min(5, "Title should be at least 5 characters long")
-    .required("Title is required"),
-  description: Yup.string()
-    .min(10, "Description should be at least 10 characters long")
-    .required("Description is required"),
-  price: Yup.number()
-    .positive("Price should be greater than zero")
-    .required("Price is required"),
-  discountedPrice: Yup.number()
-    .positive("Discounted Price should be greater than zero")
-    .required("Discounted Price is required"),
-  discountPercent: Yup.number()
-    .positive("Discount Percent should be greater than zero")
-    .required("Discount Percent is required"),
-  quantity: Yup.number()
-    .positive("Quantity should be greater than zero")
-    .required("Quantity is required"),
-  color: Yup.string().required("Color is required"),
-  category: Yup.string().required("Category is required"),
-  sizes: Yup.string().required("Sizes are required"),
-})
-
 const ProductForm = () => {
   const [uploadImage, setUploadingImage] = useState(false);
   const dispatch = useAppDispatch();
-  const { sellers, sellerProduct } = useAppSelector(store => store);
+  const { sellerProduct } = useAppSelector(store => store);
 
   const [snackbarOpen, setOpenSnackbar] = useState(false);
 
@@ -121,7 +95,7 @@ const ProductForm = () => {
   const childCategory = (category: any, parentCategoryId: any) => {
     return category.filter((child: any) => {
       // console.log("Category", parentCategoryId, child)
-      return child.parentCategoryId == parentCategoryId;
+      return child.parentCategoryId === parentCategoryId;
     });
   };
 

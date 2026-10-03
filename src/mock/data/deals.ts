@@ -1,6 +1,5 @@
 // src/mock/data/deals.ts
 import { Deal } from '../../types/dealTypes';
-import { HomeCategory } from '../../types/homeDataTypes';
 
 export const demoDeals: Deal[] = [
   {

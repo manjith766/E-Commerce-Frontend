@@ -1,7 +1,7 @@
 // src/mock/data/orders.ts
 // Demo orders for mock mode.
 
-import { Order, OrderItem, OrderStatus } from '../../types/orderTypes';
+import { Order, OrderStatus } from '../../types/orderTypes';
 import { demoCustomer, demoAddresses, demoSellers } from './users';
 import { demoProducts } from './products';
 import { Transaction } from '../../types/Transaction';
