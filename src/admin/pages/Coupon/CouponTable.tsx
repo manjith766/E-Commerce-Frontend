@@ -6,117 +6,162 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Button, FormControl, IconButton, InputLabel, Menu, MenuItem, Select, styled, TableFooter, TablePagination } from '@mui/material';
-import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
+import { Box, FormControl, IconButton, MenuItem, Select, styled } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
-import { fetchSellers, selectSellers, updateSellerAccountStatus } from '../../../Redux Toolkit/Seller/sellerSlice';
 import { Coupon } from '../../../types/couponTypes';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { deleteCoupon } from '../../../Redux Toolkit/Admin/AdminCouponSlice';
 
-
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-    },
+const StyledTableCell = styled(TableCell)(() => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: '#101114',
+    color: '#F5F0E8',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    fontFamily: '"Plus Jakarta Sans", sans-serif',
+    fontWeight: 600,
+    fontSize: '0.8rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+  },
+  [`&.${tableCellClasses.body}`]: {
+    color: '#F5F0E8',
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    fontSize: '0.85rem',
+  },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-        border: 0,
-    },
+const StyledTableRow = styled(TableRow)(() => ({
+  backgroundColor: '#191A1E',
+  '&:nth-of-type(odd)': {
+    backgroundColor: 'rgba(25, 26, 30, 0.7)',
+  },
+  '&:hover': {
+    backgroundColor: 'rgba(232, 117, 50, 0.05)',
+  },
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
 }));
 
 const accountStatuses = [
-    { status: 'ACTIVE', title: 'Active', description: 'Account is active and in good standing' },
-
-    { status: 'PENDING_VERIFICATION', title: 'Pending Verification', description: 'Account is created but not yet verified' },
-    { status: 'SUSPENDED', title: 'Suspended', description: 'Account is temporarily suspended, possibly due to violations' },
-    { status: 'DEACTIVATED', title: 'Deactivated', description: 'Account is deactivated, user may have chosen to deactivate it' },
-    { status: 'BANNED', title: 'Banned', description: 'Account is permanently banned due to severe violations' },
-    { status: 'CLOSED', title: 'Closed', description: 'Account is permanently closed, possibly at user request' }
+  { status: 'ACTIVE', title: 'Active Campaign' },
+  { status: 'PENDING_VERIFICATION', title: 'Pending Approval' },
+  { status: 'SUSPENDED', title: 'Suspended' },
+  { status: 'DEACTIVATED', title: 'Archived / Deactivated' },
 ];
 
-
 export default function CouponTable() {
-    const [page, setPage] = React.useState(0);
-    const [status, setStatus] = React.useState(accountStatuses[0].status)
-    const { sellers, adminCoupon } = useAppSelector(store => store)
-    const dispatch = useAppDispatch();
+  const [status, setStatus] = React.useState(accountStatuses[0].status);
+  const { adminCoupon } = useAppSelector(store => store);
+  const dispatch = useAppDispatch();
 
-    const handleDeleteCoupon = (id:number) => {
-        dispatch(deleteCoupon({ id, jwt: localStorage.getItem("jwt") || "" }))
-    }
+  const handleDeleteCoupon = (id: number) => {
+    dispatch(deleteCoupon({ id, jwt: localStorage.getItem("jwt") || "" }));
+  };
 
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs uppercase tracking-[0.2em] text-cinema-orange font-semibold block mb-1">
+            Privilege & Loyalty
+          </span>
+          <h1 className="font-editorial text-2xl sm:text-3xl text-cinema-text">Promotional Vouchers & Codes</h1>
+        </div>
+        
+        <div className="w-56">
+          <FormControl fullWidth size="small">
+            <Select
+              id="coupon-status-select"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as string)}
+              sx={{
+                color: '#F5F0E8',
+                bgcolor: 'rgba(16, 17, 20, 0.6)',
+                '.MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#E87532',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(232, 117, 50, 0.5)',
+                },
+                '.MuiSvgIcon-root': {
+                  color: '#E87532',
+                },
+              }}
+            >
+              {accountStatuses.map((item) => (
+                <MenuItem key={item.status} value={item.status} sx={{ bgcolor: '#191A1E', color: '#F5F0E8', '&:hover': { bgcolor: '#26282E' } }}>
+                  {item.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+      </div>
 
-
-    return (
-        <>
-            <div className='pb-5 w-60'>
-                <FormControl color='primary' fullWidth>
-                    <Select
-                        //   labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={status}
-                        // onChange={handleAccountStatusChange}
-                        color='primary'
-                        className='text-primary-color'
-
-                    >
-                        {accountStatuses.map((status) =>
-                            <MenuItem value={status.status}>{status.title}</MenuItem>)}
-
-                    </Select>
-                </FormControl>
-            </div>
-
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                    <TableHead>
-                        <TableRow>
-                            <StyledTableCell>Coupon Code</StyledTableCell>
-                            <StyledTableCell >Start Date</StyledTableCell>
-                            <StyledTableCell >End Date</StyledTableCell>
-                            <StyledTableCell >Min Order Value</StyledTableCell>
-                            <StyledTableCell >Discount %</StyledTableCell>
-                            <StyledTableCell align="right">Status</StyledTableCell>
-                            <StyledTableCell align="right">Delete</StyledTableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {adminCoupon.coupons?.map((coupon: Coupon) => (
-                            <StyledTableRow key={coupon.id}>
-                                <StyledTableCell component="th" scope="row">
-                                    {coupon.code}
-                                </StyledTableCell>
-                                <StyledTableCell >{coupon.validityStartDate}</StyledTableCell>
-                                <StyledTableCell >{coupon.validityEndDate}</StyledTableCell>
-                                <StyledTableCell >{coupon.minimumOrderValue}</StyledTableCell>
-                                <StyledTableCell >{coupon.discountPercentage}</StyledTableCell>
-                                <StyledTableCell align="right">{coupon.active ? "Active" : "Deactive"}</StyledTableCell>
-
-                                <StyledTableCell align="right">
-                                    <IconButton onClick={() => handleDeleteCoupon(coupon.id)}>
-                                        <DeleteOutlineIcon className='text-red-700 cursor-pointer' />
-                                    </IconButton>
-
-                                </StyledTableCell>
-
-                            </StyledTableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </>
-
-    );
+      <TableContainer component={Paper} sx={{ bgcolor: 'transparent', boxShadow: 'none', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '16px', overflow: 'hidden' }}>
+        <Table sx={{ minWidth: 700 }} aria-label="coupon table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Passcode</StyledTableCell>
+              <StyledTableCell>Active From</StyledTableCell>
+              <StyledTableCell>Expires</StyledTableCell>
+              <StyledTableCell align="right">Threshold</StyledTableCell>
+              <StyledTableCell align="right">Privilege Benefit</StyledTableCell>
+              <StyledTableCell align="center">Campaign State</StyledTableCell>
+              <StyledTableCell align="right">Actions</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {adminCoupon.coupons?.map((coupon: Coupon) => (
+              <StyledTableRow key={coupon.id}>
+                <StyledTableCell component="th" scope="row">
+                  <span className="font-mono text-cinema-orange font-bold tracking-wider px-2 py-1 bg-cinema-orange/10 border border-cinema-orange/30 rounded">
+                    {coupon.code}
+                  </span>
+                </StyledTableCell>
+                <StyledTableCell>{coupon.validityStartDate}</StyledTableCell>
+                <StyledTableCell>{coupon.validityEndDate}</StyledTableCell>
+                <StyledTableCell align="right">₹{coupon.minimumOrderValue?.toLocaleString()}</StyledTableCell>
+                <StyledTableCell align="right">
+                  <span className="font-editorial text-cinema-orange font-bold text-base">
+                    {coupon.discountPercentage}% OFF
+                  </span>
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Box
+                    sx={{
+                      color: coupon.active ? '#34D399' : '#A6A29B',
+                      bgcolor: coupon.active ? 'rgba(52, 211, 153, 0.1)' : 'rgba(166, 162, 155, 0.1)',
+                      borderColor: coupon.active ? 'rgba(52, 211, 153, 0.3)' : 'rgba(166, 162, 155, 0.2)',
+                    }}
+                    className="border inline-block px-3 py-0.5 rounded-full text-xs font-semibold tracking-wider uppercase"
+                  >
+                    {coupon.active ? "Active" : "Dormant"}
+                  </Box>
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  <IconButton
+                    onClick={() => handleDeleteCoupon(coupon.id)}
+                    size="small"
+                    sx={{
+                      color: '#F87171',
+                      '&:hover': {
+                        bgcolor: 'rgba(248, 113, 113, 0.1)',
+                      }
+                    }}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  );
 }

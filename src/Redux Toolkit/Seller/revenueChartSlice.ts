@@ -1,21 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { api } from '../../Config/Api';
+import { sellerService } from '../../services/serviceFactory';
 
-// Define the base URL for the API
-const API_BASE_URL = '/api/seller/revenue/chart';
-interface RevenueChart{
-    date: string;
-    revenue:number;
+interface RevenueChart {
+  date: string;
+  revenue: number;
 }
-// Define interfaces for the state
+
 interface RevenueState {
-  chart:RevenueChart[];
+  chart: RevenueChart[];
   loading: boolean;
   error: string | null;
 }
 
-// Initial state for the slice
 const initialState: RevenueState = {
   chart: [],
   loading: false,
@@ -23,32 +19,18 @@ const initialState: RevenueState = {
 };
 
 export const fetchRevenueChart = createAsyncThunk(
-    'revenue/fetchRevenueChart',
-    async ({ type }: { type: string }, { rejectWithValue }) => {
-        console.log("type      ---- ",type)
-      try {
-        const token = localStorage.getItem('jwt'); 
-        const response = await api.get(`${API_BASE_URL}`, {
-          params: { type },
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("revienue chart #####",response.data)
-        return response.data;
-      } catch (error: any) {
-          console.log("error ",error.response)
-        return rejectWithValue(error.response?.data || 'Failed to fetch daily revenue');
-      }
+  'revenue/fetchRevenueChart',
+  async ({ type }: { type: string }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('jwt') || '';
+      const data = await sellerService.fetchRevenueChart(token, type);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch revenue chart');
     }
-  );
+  }
+);
 
-
-
-
-
-
-
-
-// Create RevenueSlice
 const revenueSlice = createSlice({
   name: 'revenue',
   initialState,
@@ -67,7 +49,6 @@ const revenueSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
-
   },
 });
 

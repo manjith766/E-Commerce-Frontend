@@ -1,27 +1,20 @@
 import './App.css';
-import { ThemeProvider } from '@emotion/react';
+import { ThemeProvider } from '@mui/material/styles';
 import customeTheme from './Theme/customeTheme';
-import { Button } from '@mui/material';
-import Navbar from './customer/components/Navbar/Navbar';
-import Home from './customer/pages/Home/Home';
-import Footer from './customer/components/Footer/Footer';
-import Products from './customer/pages/Products/Products';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import SellerDashboard from './seller/pages/SellerDashboard/SellerDashboard';
 import CustomerRoutes from './routes/CustomerRoutes';
 import AdminDashboard from './admin/pages/Dashboard/Dashboard';
-import SellerAccountForm from './customer/pages/BecomeSeller/SellerAccountForm';
 import SellerAccountVerification from './seller/pages/SellerAccountVerification';
 import SellerAccountVerified from './seller/pages/SellerAccountVerified';
 import { useAppDispatch, useAppSelector } from './Redux Toolkit/Store';
 import { useEffect } from 'react';
 import { fetchSellerProfile } from './Redux Toolkit/Seller/sellerSlice';
 import BecomeSeller from './customer/pages/BecomeSeller/BecomeSeller';
-import AdminLoginForm from './admin/pages/Auth/AdminLogin';
 import AdminAuth from './admin/pages/Auth/AdminAuth';
 import { fetchUserProfile } from './Redux Toolkit/Customer/UserSlice';
-import { createHomeCategories, fetchHomePageData } from './Redux Toolkit/Customer/Customer/AsyncThunk';
+import { createHomeCategories } from './Redux Toolkit/Customer/Customer/AsyncThunk';
 import { homeCategories } from './data/homeCategories';
 import Mobile from './data/Products/mobile';
 
@@ -36,7 +29,7 @@ const navigate=useNavigate();
       dispatch(fetchSellerProfile(localStorage.getItem("jwt") || sellerAuth.jwt))
     }
 
-  }, [auth.jwt, sellerAuth.jwt])
+  }, [auth.jwt, sellerAuth.jwt, dispatch, navigate])
 
   useEffect(() => {
     dispatch(createHomeCategories(homeCategories))

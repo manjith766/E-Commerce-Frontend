@@ -1,155 +1,56 @@
-import { Avatar, Box, Grid, LinearProgress, Rating } from '@mui/material'
-import React from 'react'
+import { Avatar, Box, Grid, LinearProgress, Rating } from '@mui/material';
+import React from 'react';
 import { Review } from '../../../types/reviewTypes';
 
-
-
-const RatingCard = ({totalReview}:any) => {
+const RatingCard = ({ totalReview }: any) => {
     return (
-        <div className="border p-5 rounded-md">
-
-
-            <div className="flex items-center space-x-3 pb-10">
+        <div className="bg-cinema-surface/80 border border-white/10 p-6 rounded-2xl text-cinema-cream">
+            <div className="flex items-center space-x-3 pb-8">
                 <Rating
                     name="read-only"
                     value={4.6}
                     precision={0.5}
                     readOnly
+                    sx={{
+                        "& .MuiRating-iconFilled": { color: "#E87532" },
+                        "& .MuiRating-iconEmpty": { color: "rgba(255,255,255,0.2)" },
+                    }}
                 />
-
-                <p className="opacity-60">{totalReview} Ratings</p>
+                <span className="text-sm text-cinema-muted uppercase tracking-wider font-medium">
+                    {totalReview} Verified Impressions
+                </span>
             </div>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Excellent</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={40}
-                            color="success"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Very Good</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={30}
-                            color="success"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Good</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className="bg-[#885c0a]"
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={25}
-
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Avarage</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{
-                                bgcolor: "#d0d0d0",
-                                borderRadius: 4,
-                                height: 7,
-                                "& .MuiLinearProgress-bar": {
-                                    bgcolor: "#885c0a", // stroke color
-                                },
-                            }}
-                            variant="determinate"
-                            value={21}
-                            color="success"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Poor</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={10}
-                            color="error"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-
-
+            
+            <div className="space-y-3">
+                {[
+                    { label: "Excellent", value: 75, count: 240 },
+                    { label: "Very Good", value: 50, count: 85 },
+                    { label: "Good", value: 30, count: 20 },
+                    { label: "Average", value: 15, count: 9 },
+                    { label: "Poor", value: 5, count: 4 },
+                ].map((tier, idx) => (
+                    <div key={idx} className="flex items-center gap-4 text-xs">
+                        <span className="w-20 text-cinema-muted font-light">{tier.label}</span>
+                        <div className="flex-1">
+                            <LinearProgress
+                                sx={{
+                                    bgcolor: "rgba(255, 255, 255, 0.08)",
+                                    borderRadius: 4,
+                                    height: 6,
+                                    "& .MuiLinearProgress-bar": {
+                                        backgroundColor: idx < 2 ? "#E87532" : idx < 3 ? "#C95E24" : "rgba(255,255,255,0.3)",
+                                    }
+                                }}
+                                variant="determinate"
+                                value={tier.value}
+                            />
+                        </div>
+                        <span className="w-12 text-right text-cinema-muted">{tier.count}</span>
+                    </div>
+                ))}
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default RatingCard
+export default RatingCard;

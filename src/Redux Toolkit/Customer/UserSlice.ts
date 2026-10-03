@@ -1,8 +1,7 @@
 // src/slices/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { User, UserState } from "../../types/userTypes";
-import { api } from "../../Config/Api";
+import { authService } from "../../services/serviceFactory";
 import { RootState } from "../Store";
 
 const initialState: UserState = {
@@ -11,9 +10,6 @@ const initialState: UserState = {
   error: null,
   profileUpdated: false,
 };
-
-// Define the base URL for the API
-const API_URL = "/api/users";
 
 export const fetchUserProfile = createAsyncThunk<
   User,
@@ -25,17 +21,13 @@ export const fetchUserProfile = createAsyncThunk<
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.get(`${API_URL}/profile`, {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      console.log(" user profile ", response.data);
-      if (response.data.role === "ROLE_ADMIN") {
+      const data = await authService.fetchUserProfile(jwt);
+      if (data.role === "ROLE_ADMIN" && navigate) {
         navigate("/admin");
       }
-      return response.data;
+      return data;
     } catch (error: any) {
-      console.log("error ", error.response);
-      return rejectWithValue("Failed to fetch user profile");
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch user profile");
     }
   }
 );

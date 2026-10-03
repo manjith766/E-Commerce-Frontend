@@ -3,12 +3,9 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
   Box,
-  Button,
   TextField,
-  Typography,
   Grid,
 } from '@mui/material';
-import { useDispatch } from 'react-redux';
 import { useAppDispatch } from '../../../Redux Toolkit/Store';
 import { createOrder } from '../../../Redux Toolkit/Customer/OrderSlice';
 import { Address } from '../../../types/userTypes';
@@ -30,11 +27,26 @@ const ContactSchema = Yup.object().shape({
 
 interface AddressFormProp {
   handleClose: () => void;
-  paymentGateway:string
+  paymentGateway: string;
 }
 
-const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => {
-  const dispatch=useAppDispatch()
+const inputStyles = {
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "rgba(16, 17, 20, 0.8)",
+    borderRadius: "0.75rem",
+    color: "#F5F0E8",
+    "& fieldset": { borderColor: "rgba(255, 255, 255, 0.15)" },
+    "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
+    "&.Mui-focused fieldset": { borderColor: "#E87532" },
+  },
+  "& .MuiInputLabel-root": {
+    color: "#A6A29B",
+    "&.Mui-focused": { color: "#E87532" },
+  },
+};
+
+const AddressForm: React.FC<AddressFormProp> = ({ handleClose, paymentGateway }) => {
+  const dispatch = useAppDispatch();
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -47,28 +59,35 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
     },
     validationSchema: ContactSchema,
     onSubmit: (values) => {
-      console.log("form submited", values);
       handleCreateOrder(values as Address);
       handleClose();
     },
   });
 
-  const handleCreateOrder=(address:Address)=>{
-    dispatch(createOrder({address,jwt:localStorage.getItem('jwt')|| "",paymentGateway}))
-  }
+  const handleCreateOrder = (address: Address) => {
+    dispatch(createOrder({ address, jwt: localStorage.getItem('jwt') || "", paymentGateway }));
+  };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto'}}>
-      <p className='text-xl font-bold text-center pb-5'>
-        Contact Details
-      </p>
+    <Box sx={{ maxWidth: 550, mx: 'auto', color: '#F5F0E8' }}>
+      <div className="text-center pb-6">
+        <span className="text-xs uppercase tracking-[0.25em] text-cinema-orange font-semibold">
+          Destination Coordinates
+        </span>
+        <h2 className="font-serif text-2xl text-cinema-cream mt-1 font-normal">
+          Add Delivery Address
+        </h2>
+      </div>
+
       <form onSubmit={formik.handleSubmit}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2.5}>
           <Grid item xs={12}>
             <TextField
               fullWidth
+              size="small"
               name="name"
-              label="Name"
+              label="Recipient Full Name"
+              sx={inputStyles}
               value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -79,8 +98,10 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
           <Grid item xs={6}>
             <TextField
               fullWidth
+              size="small"
               name="mobile"
-              label="Mobile"
+              label="10-Digit Mobile"
+              sx={inputStyles}
               value={formik.values.mobile}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -91,8 +112,10 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
           <Grid item xs={6}>
             <TextField
               fullWidth
+              size="small"
               name="pinCode"
-              label="Pin Code"
+              label="Postal Code (PIN)"
+              sx={inputStyles}
               value={formik.values.pinCode}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -103,8 +126,10 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
           <Grid item xs={12}>
             <TextField
               fullWidth
+              size="small"
               name="address"
-              label="Address (House No, Building, Street)"
+              label="Street Address, House/Villa No."
+              sx={inputStyles}
               value={formik.values.address}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -115,8 +140,10 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
           <Grid item xs={12}>
             <TextField
               fullWidth
+              size="small"
               name="locality"
-              label="Locality/Town"
+              label="Locality / Landmark"
+              sx={inputStyles}
               value={formik.values.locality}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -127,8 +154,10 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
           <Grid item xs={6}>
             <TextField
               fullWidth
+              size="small"
               name="city"
               label="City"
+              sx={inputStyles}
               value={formik.values.city}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -139,8 +168,10 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
           <Grid item xs={6}>
             <TextField
               fullWidth
+              size="small"
               name="state"
-              label="State"
+              label="State / Province"
+              sx={inputStyles}
               value={formik.values.state}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -149,9 +180,21 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
             />
           </Grid>
           <Grid item xs={12}>
-            <Button sx={{py:"14px"}} type="submit" variant="contained" color="primary" fullWidth>
-              Add Address
-            </Button>
+            <div className="pt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-1/2 py-3 rounded-xl border border-white/15 text-cinema-cream text-xs uppercase tracking-wider font-semibold hover:bg-white/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="w-1/2 py-3 rounded-xl bg-gradient-to-r from-cinema-orange to-cinema-orangeDark text-white text-xs uppercase tracking-wider font-bold shadow-lg shadow-cinema-orange/20 hover:shadow-cinema-orange/30 transition-all"
+              >
+                Save & Proceed
+              </button>
+            </div>
           </Grid>
         </Grid>
       </form>
@@ -160,3 +203,4 @@ const AddressForm:React.FC<AddressFormProp> = ({handleClose,paymentGateway}) => 
 };
 
 export default AddressForm;
+

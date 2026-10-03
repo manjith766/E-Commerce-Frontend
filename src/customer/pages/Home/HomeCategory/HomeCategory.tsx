@@ -143,13 +143,18 @@ const homeCategory=[
   
 ]
 const HomeCategory = () => {
-  const { homePage} = useAppSelector((store) => store);
-  return (
-    <div className='flex justify-center gap-7 flex-wrap '>
-        {homePage.homePageData?.shopByCategories.map((item)=><HomeCategoryCard item={item}/>)}
-        
-    </div>
-  )
-}
+  const { homePage } = useAppSelector((store) => store);
+  const categories = homePage.homePageData?.shopByCategories?.length 
+    ? homePage.homePageData.shopByCategories 
+    : homeCategory;
 
-export default HomeCategory
+  return (
+    <div className='flex justify-center gap-6 sm:gap-8 flex-wrap max-w-7xl mx-auto'>
+      {categories.map((item: any) => (
+        <HomeCategoryCard key={item.categoryId || item.name} item={item} />
+      ))}
+    </div>
+  );
+};
+
+export default HomeCategory;

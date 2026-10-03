@@ -1,11 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Cart } from "../../types/cartTypes";
 import { Coupon, CouponState } from "../../types/couponTypes";
-import { api } from "../../Config/Api";
-
-const API_URL = "/api/coupons";
-
-// Async thunks
+import { adminService } from "../../services/serviceFactory";
 
 export const createCoupon = createAsyncThunk<
   Coupon,
@@ -13,13 +8,10 @@ export const createCoupon = createAsyncThunk<
   { rejectValue: string }
 >("coupon/createCoupon", async ({ coupon, jwt }, { rejectWithValue }) => {
   try {
-    const response = await api.post(`${API_URL}/admin/create`, coupon, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    });
-    console.log(" created coupon ", response.data)
-    return response.data;
+    const data = await adminService.createCoupon(jwt, coupon);
+    return data;
   } catch (error: any) {
-    return rejectWithValue(error.response?.data || "Failed to create coupon");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to create coupon");
   }
 });
 
@@ -29,12 +21,10 @@ export const deleteCoupon = createAsyncThunk<
   { rejectValue: string }
 >("coupon/deleteCoupon", async ({ id, jwt }, { rejectWithValue }) => {
   try {
-    const response = await api.delete(`${API_URL}/admin/delete/${id}`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    });
-    return response.data;
+    const data = await adminService.deleteCoupon(jwt, id);
+    return data;
   } catch (error: any) {
-    return rejectWithValue(error.response?.data || "Failed to delete coupon");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to delete coupon");
   }
 });
 
@@ -44,17 +34,13 @@ export const fetchAllCoupons = createAsyncThunk<
   { rejectValue: string }
 >("coupon/fetchAllCoupons", async (jwt, { rejectWithValue }) => {
   try {
-    const response = await api.get(`${API_URL}/admin/all`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    });
-    console.log("all coupons ",response.data)
-    return response.data;
+    const data = await adminService.fetchAllCoupons(jwt);
+    return data;
   } catch (error: any) {
-    return rejectWithValue(error.response?.data || "Failed to fetch coupons");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch coupons");
   }
 });
 
-// Initial state
 const initialState: CouponState = {
   coupons: [],
   cart: null,
@@ -64,7 +50,6 @@ const initialState: CouponState = {
   couponApplied: false,
 };
 
-// Slice
 const couponSlice = createSlice({
   name: "coupon",
   initialState,

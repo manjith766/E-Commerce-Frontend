@@ -1,9 +1,9 @@
 // src/redux/slices/sellerOrderSlice.ts
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Order, OrderStatus } from '../../types/orderTypes'; 
+import { Order, OrderStatus } from '../../types/orderTypes';
 import { ApiResponse } from '../../types/authTypes';
-import { api } from '../../Config/Api';
+import { sellerService } from '../../services/serviceFactory';
 
 interface SellerOrderState {
   orders: Order[];
@@ -22,49 +22,38 @@ export const fetchSellerOrders = createAsyncThunk<Order[], string>(
   'sellerOrders/fetchSellerOrders',
   async (jwt, { rejectWithValue }) => {
     try {
-      const response = await api.get('/seller/orders', {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-
-      console.log("fetch seller orders",response.data)
-      return response.data;
+      const data = await sellerService.fetchSellerOrders(jwt);
+      return data;
     } catch (error: any) {
-      console.log("error",error.response)
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message || 'Failed to fetch seller orders');
     }
   }
 );
 
 export const updateOrderStatus = createAsyncThunk<Order, 
-{ jwt: string, 
-  orderId: number, 
-  orderStatus: OrderStatus 
+{ jwt: string; 
+  orderId: number; 
+  orderStatus: OrderStatus;
 }>(
   'sellerOrders/updateOrderStatus',
   async ({ jwt, orderId, orderStatus }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/seller/orders/${orderId}/status/${orderStatus}`, 
-        null, {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      console.log("order status updated",response.data)
-      return response.data;
+      const data = await sellerService.updateSellerOrderStatus(jwt, orderId, orderStatus);
+      return data;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message || 'Failed to update order status');
     }
   }
 );
 
-export const deleteOrder = createAsyncThunk<ApiResponse, { jwt: string, orderId: number }>(
+export const deleteOrder = createAsyncThunk<ApiResponse, { jwt: string; orderId: number }>(
   'sellerOrders/deleteOrder',
   async ({ jwt, orderId }, { rejectWithValue }) => {
     try {
-      const response = await api.delete(`/seller/orders/${orderId}/delete`, {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      return response.data;
+      const data = await sellerService.deleteSellerOrder(jwt, orderId);
+      return data;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message || 'Failed to delete order');
     }
   }
 );

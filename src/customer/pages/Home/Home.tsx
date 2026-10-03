@@ -1,95 +1,141 @@
-import React, { useState } from 'react'
-import Banner from './Banner/Banner'
-import HomeCategory from './HomeCategory/HomeCategory'
-import TopBrand from './TopBrands/Grid'
-import ElectronicCategory from './Electronic Category/ElectronicCategory'
+import React, { useState } from 'react';
+import CinematicHero from './CinematicHero';
+import HomeCategory from './HomeCategory/HomeCategory';
+import TopBrand from './TopBrands/Grid';
+import ElectronicCategory from './Electronic Category/ElectronicCategory';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { Backdrop, Button, CircularProgress } from '@mui/material'
-import ChatBot from '../ChatBot/ChatBot'
-import { useNavigate } from 'react-router-dom'
+import { Backdrop, Button, CircularProgress } from '@mui/material';
+import ChatBot from '../ChatBot/ChatBot';
+import { useNavigate } from 'react-router-dom';
 import StorefrontIcon from '@mui/icons-material/Storefront';
-import { useAppSelector } from '../../../Redux Toolkit/Store'
-import DealSlider from './Deals/Deals'
-
-
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useAppSelector } from '../../../Redux Toolkit/Store';
+import DealSlider from './Deals/Deals';
 
 const Home = () => {
-    const [showChatBot, setShowChatBot] = useState(false)
-    const { homePage } = useAppSelector(store => store)
+    const [showChatBot, setShowChatBot] = useState(false);
+    const { homePage } = useAppSelector((store) => store);
     const navigate = useNavigate();
 
     const handleShowChatBot = () => {
-        setShowChatBot(!showChatBot)
-    }
+        setShowChatBot(!showChatBot);
+    };
     const handleCloseChatBot = () => {
-        setShowChatBot(false)
-    }
+        setShowChatBot(false);
+    };
     const becomeSellerClick = () => {
-        navigate("/become-seller")
-    }
+        navigate("/become-seller");
+    };
+
     return (
-        <>
-        {(!homePage.loading)?<div className='space-y-5 lg:space-y-10 relative'>
-            {homePage.homePageData?.electricCategories && <ElectronicCategory />}
-            {/* <Banner /> */}
+        <div className="bg-[#101114] text-[#F5F0E8] min-h-screen">
+            {!homePage.loading ? (
+                <div className="space-y-12 lg:space-y-20 relative">
+                    {/* Cinematic Editorial Hero */}
+                    <CinematicHero />
 
+                    {/* Flagship Electronics Bar */}
+                    <ElectronicCategory />
 
-          {homePage.homePageData?.grid &&  <section >
-                {/* <h1 className='text-lg lg:text-4xl font-bold text-[#00927c] pb-5 lg:pb-20 text-center'>SHOP FOR WEDDING</h1> */}
-                <TopBrand />
-            </section>}
-        {homePage.homePageData?.deals &&    <section className='pt-10'>
-            <h1 className='text-center text-lg lg:text-4xl font-bold text-[#00927c] pb-5 lg:pb-10'>Today's Deals</h1>
-                <DealSlider/>
-            </section>}
-           {homePage.homePageData?.shopByCategories && <section className='flex flex-col justify-center items-center py-20 px-5 lg:px-20'>
-                <h1 className='text-lg lg:text-4xl font-bold text-[#00927c] pb-5 lg:pb-20'>SHOP BY CATEGORY</h1>
-                <HomeCategory />
-            </section>}
-            <section className='lg:px-20 relative h-[200px] lg:h-[450px] object-cover'>
-                <img className='w-full h-full' src={"/seller_banner_image.jpg"} alt="" />
-                <div className='absolute top-1/2 left-4 lg:left-[15rem] transform  -translate-y-1/2 font-semibold lg:text-4xl space-y-3 '>
-                    <h1 className=''>
-                        Sell Your Product
-                    </h1>
-                    <p className='text-lg md:text-2xl'>With <strong className='logo text-3xl md:text-5xl pl-2'>zosh bazzar</strong></p>
+                    {/* Wedding & Festive Couture Spotlight */}
+                    <TopBrand />
 
-                    <div className='pt-6 flex justify-center'>
-                        <Button
-                            onClick={becomeSellerClick}
-                            startIcon={<StorefrontIcon />}
-                            variant="contained"
-                        >
-                            Become Seller
-                        </Button>
-                    </div>
+                    {/* Time-Sensitive Editorial Deals */}
+                    <DealSlider />
 
+                    {/* Shop by Category / Atelier Curations */}
+                    <section className="py-16 px-6 lg:px-16 max-w-7xl mx-auto">
+                        <div className="text-center max-w-2xl mx-auto mb-14 space-y-2">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#E87532]">
+                                Departments
+                            </span>
+                            <h2 className="font-editorial text-3xl lg:text-4xl font-bold tracking-tight text-[#F5F0E8]">
+                                EXPLORE BY ATELIER
+                            </h2>
+                            <p className="text-xs text-[#A6A29B] font-light">
+                                From haute couture to contemporary living spaces, browse curated universes.
+                            </p>
+                        </div>
+                        <HomeCategory />
+                    </section>
+
+                    {/* Full-width Editorial Merchant Showcase Section */}
+                    <section className="px-6 lg:px-16 max-w-7xl mx-auto py-8">
+                        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#191A1E] via-[#221C19] to-[#2B1B14] border border-white/10 p-8 sm:p-14 lg:p-16 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] flex flex-col lg:flex-row items-center justify-between gap-10">
+                            {/* Ambient copper flare */}
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-[#E87532]/10 blur-[100px] pointer-events-none rounded-full"></div>
+
+                            <div className="space-y-4 max-w-xl z-10 text-center lg:text-left">
+                                <span className="inline-block text-[11px] font-bold uppercase tracking-[0.2em] text-[#E87532] px-3.5 py-1 rounded-full bg-[#E87532]/10 border border-[#E87532]/25">
+                                    Merchant Partner Programme
+                                </span>
+                                <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold text-[#F5F0E8] leading-tight">
+                                    Showcase Your Craft on <span className="italic font-serif-display text-[#E87532]">Ecommerce Bazar</span>
+                                </h2>
+                                <p className="text-xs sm:text-sm text-[#A6A29B] font-light leading-relaxed">
+                                    Join a premier collective of artisanal creators, renowned brands, and verified suppliers. Enjoy 0% commission introductory tiers, automated payouts, and comprehensive fulfillment analytics.
+                                </p>
+                                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                                    <button
+                                        onClick={becomeSellerClick}
+                                        className="inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-gradient-to-r from-[#E87532] to-[#C95E24] hover:from-[#FF8C4A] hover:to-[#E87532] text-[#F5F0E8] font-semibold text-xs uppercase tracking-[0.14em] shadow-lg hover:shadow-[0_0_30px_rgba(232,117,50,0.5)] transition-all duration-300"
+                                    >
+                                        <StorefrontIcon sx={{ fontSize: 18 }} />
+                                        <span>Launch Seller Hub</span>
+                                        <ArrowForwardIcon sx={{ fontSize: 16 }} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Stylized Metric Showcase Card */}
+                            <div className="w-full lg:w-auto grid grid-cols-2 gap-4 z-10">
+                                <div className="bg-[#101114]/80 backdrop-blur-md border border-white/10 p-6 rounded-2xl text-center space-y-1">
+                                    <p className="font-editorial text-3xl font-bold text-[#E87532]">1.2M+</p>
+                                    <p className="text-[11px] uppercase tracking-wider text-[#A6A29B]">Active Patrons</p>
+                                </div>
+                                <div className="bg-[#101114]/80 backdrop-blur-md border border-white/10 p-6 rounded-2xl text-center space-y-1">
+                                    <p className="font-editorial text-3xl font-bold text-[#F5F0E8]">24 Hrs</p>
+                                    <p className="text-[11px] uppercase tracking-wider text-[#A6A29B]">Rapid Onboarding</p>
+                                </div>
+                                <div className="bg-[#101114]/80 backdrop-blur-md border border-white/10 p-6 rounded-2xl text-center space-y-1">
+                                    <p className="font-editorial text-3xl font-bold text-[#F5F0E8]">0%</p>
+                                    <p className="text-[11px] uppercase tracking-wider text-[#A6A29B]">Day-1 Commission</p>
+                                </div>
+                                <div className="bg-[#101114]/80 backdrop-blur-md border border-white/10 p-6 rounded-2xl text-center space-y-1">
+                                    <p className="font-editorial text-3xl font-bold text-[#E87532]">24/7</p>
+                                    <p className="text-[11px] uppercase tracking-wider text-[#A6A29B]">Priority Support</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Floating AI ChatBot Concierge */}
+                    <section className="fixed bottom-8 right-8 z-50">
+                        {showChatBot ? (
+                            <ChatBot handleClose={handleCloseChatBot} />
+                        ) : (
+                            <button
+                                onClick={handleShowChatBot}
+                                className="h-14 w-14 rounded-full bg-gradient-to-r from-[#E87532] to-[#C95E24] text-[#F5F0E8] flex justify-center items-center shadow-[0_10px_25px_rgba(232,117,50,0.5)] hover:scale-110 hover:shadow-[0_15px_35px_rgba(232,117,50,0.7)] transition-all duration-300 border border-white/20"
+                                title="Open Concierge AI"
+                            >
+                                <ChatBubbleIcon sx={{ fontSize: "1.6rem" }} />
+                            </button>
+                        )}
+                    </section>
                 </div>
+            ) : (
+                <Backdrop open={true} sx={{ backgroundColor: "rgba(11, 12, 14, 0.9)" }}>
+                    <div className="flex flex-col items-center gap-4">
+                        <CircularProgress sx={{ color: "#E87532" }} />
+                        <p className="font-editorial text-sm tracking-[0.2em] uppercase text-[#F5F0E8]">
+                            Curating Experience...
+                        </p>
+                    </div>
+                </Backdrop>
+            )}
+        </div>
+    );
+};
 
-            </section>
-
-            <section className='fixed bottom-10 right-10'>
-                {showChatBot ? <ChatBot handleClose={handleCloseChatBot} /> : <Button onClick={handleShowChatBot} sx={{ borderRadius: "2rem" }} variant='contained' className='h-16 w-16  flex justify-center items-center rounded-full'>
-                    <ChatBubbleIcon sx={{ color: "white", fontSize: "2rem" }} />
-                </Button>}
-
-
-
-
-            </section>
-    
-
-
-        </div>: <Backdrop
-                open={true}
-
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>}
-       
-        </>
-        
-    )
-}
-
-export default Home
+export default Home;

@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import {
   ApiResponse,
   CreateReviewRequest,
@@ -7,9 +6,7 @@ import {
   ReviewState,
 } from "../../types/reviewTypes";
 import { RootState } from "../Store";
-import { api } from "../../Config/Api";
-
-const API_URL = "/api";
+import { reviewService } from "../../services/serviceFactory";
 
 // Async thunks
 export const fetchReviewsByProductId = createAsyncThunk<
@@ -20,46 +17,29 @@ export const fetchReviewsByProductId = createAsyncThunk<
   "review/fetchReviewsByProductId",
   async ({ productId }, { rejectWithValue }) => {
     try {
-      const response = await api.get(
-        `${API_URL}/products/${productId}/reviews`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-          },
-        }
-      );
-      console.log("fetch all reviews for product ", response.data);
-      return response.data;
+      const data = await reviewService.fetchProductReviews(productId);
+      return data;
     } catch (error: any) {
-      console.log("error - ", error.response?.data);
-      return rejectWithValue(error.response?.data || "Failed to fetch reviews");
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch reviews");
     }
   }
 );
 
 export const createReview = createAsyncThunk<
   Review,
-  { productId: number; review: CreateReviewRequest; jwt: string,navigate:any },
+  { productId: number; review: CreateReviewRequest; jwt: string; navigate: any },
   { rejectValue: string }
 >(
   "review/createReview",
-  async ({ productId, review, jwt,navigate }, { rejectWithValue }) => {
+  async ({ productId, review, jwt, navigate }, { rejectWithValue }) => {
     try {
-      const response = await api.post(
-        `${API_URL}/products/${productId}/reviews`,
-        review,
-        {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        }
-      );
-      navigate(`/reviews/${productId}`);
-      console.log("create reviews for product ", response.data);
-      return response.data;
+      const data = await reviewService.createReview(jwt, productId, review);
+      if (navigate) {
+        navigate(`/reviews/${productId}`);
+      }
+      return data;
     } catch (error: any) {
-      console.log("error ", error);
-      return rejectWithValue(error.response?.data || "Failed to create review");
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to create review");
     }
   }
 );
@@ -72,20 +52,10 @@ export const updateReview = createAsyncThunk<
   "review/updateReview",
   async ({ reviewId, review, jwt }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(
-        `${API_URL}/reviews/${reviewId}`,
-        review,
-        {
-          headers: {
-            Authorization: `Bearer ${jwt}`,
-          },
-        }
-      );
-      console.log("updated reviews for product ", response.data);
-      return response.data;
+      const data = await reviewService.updateReview(jwt, reviewId, review);
+      return data;
     } catch (error: any) {
-      console.log("error ", error);
-      return rejectWithValue(error.response?.data || "Failed to update review");
+      return rejectWithValue(error.response?.data?.message || error.message || "Failed to update review");
     }
   }
 );
@@ -96,19 +66,13 @@ export const deleteReview = createAsyncThunk<
   { rejectValue: string }
 >("review/deleteReview", async ({ reviewId, jwt }, { rejectWithValue }) => {
   try {
-    const response = await api.delete(`${API_URL}/reviews/${reviewId}`, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-    return response.data;
+    const data = await reviewService.deleteReview(jwt, reviewId);
+    return data;
   } catch (error: any) {
-    console.log("error ", error);
-    return rejectWithValue(error.response?.data || "Failed to delete review");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to delete review");
   }
 });
 
-// Initial state
 const initialState: ReviewState = {
   reviews: [],
   loading: false,
@@ -118,7 +82,6 @@ const initialState: ReviewState = {
   reviewDeleted: false,
 };
 
-// Slice
 const reviewSlice = createSlice({
   name: "review",
   initialState,
@@ -212,4 +175,3 @@ const reviewSlice = createSlice({
 
 export default reviewSlice.reducer;
 export const { resetReviewState } = reviewSlice.actions;
-

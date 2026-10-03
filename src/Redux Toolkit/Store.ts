@@ -50,10 +50,9 @@ const rootReducer = combineReducers({
   revenueChart: revenueChartSlice,
 
   // admin
-  adminCoupon:AdminCouponSlice,
-  adminDeals:DealSlice,
-  admin:AdminSlice,
-  deal:DealSlice
+  adminCoupon: AdminCouponSlice,
+  admin: AdminSlice,
+  deal: DealSlice,
 });
 
 const store = configureStore({

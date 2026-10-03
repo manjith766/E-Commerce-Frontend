@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { Transaction } from '../../types/Transaction';
-import { Order } from '../../types/orderTypes';
-import { api } from '../../Config/Api';
+import { sellerService } from '../../services/serviceFactory';
 
 interface TransactionState {
   transactions: Transaction[];
@@ -11,7 +9,6 @@ interface TransactionState {
   error: string | null;
 }
 
-// Initial state
 const initialState: TransactionState = {
   transactions: [],
   transaction: null,
@@ -26,18 +23,10 @@ export const fetchTransactionsBySeller = createAsyncThunk<
   { rejectValue: string }
 >('transactions/fetchTransactionsBySeller', async (jwt, { rejectWithValue }) => {
   try {
-    const response = await api.get<Transaction[]>('/api/transactions/seller', {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-    console.log("fetchTransactionsBySeller",response.data)
-    return response.data;
+    const data = await sellerService.fetchSellerTransactions(jwt);
+    return data;
   } catch (error: any) {
-    if (error.response) {
-      return rejectWithValue(error.response.data.message);
-    }
-    return rejectWithValue('Failed to fetch transactions');
+    return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch transactions');
   }
 });
 
@@ -47,17 +36,12 @@ export const fetchAllTransactions = createAsyncThunk<
   { rejectValue: string }
 >('transactions/fetchAllTransactions', async (_, { rejectWithValue }) => {
   try {
-    const response = await api.get<Transaction[]>('/api/transactions');
-    return response.data;
+    const data = await sellerService.fetchAllTransactions();
+    return data;
   } catch (error: any) {
-    if (error.response) {
-      return rejectWithValue(error.response.data.message);
-    }
-    return rejectWithValue('Failed to fetch all transactions');
+    return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch all transactions');
   }
 });
-
-
 
 // Slice
 const transactionSlice = createSlice({

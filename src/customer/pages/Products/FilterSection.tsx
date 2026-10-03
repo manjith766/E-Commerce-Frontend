@@ -8,23 +8,17 @@ import {
   RadioGroup,
 } from "@mui/material";
 import React, { useState } from "react";
-import { brands } from "../../../data/Filter/brand";
-import { teal } from "@mui/material/colors";
-import zIndex from "@mui/material/styles/zIndex";
 import { colors } from "../../../data/Filter/color";
 import { price } from "../../../data/Filter/price";
 import { discount } from "../../../data/Filter/discount";
 import { useSearchParams } from "react-router-dom";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 const FilterSection = () => {
   const [expendColor, setExpendColor] = useState(false);
-  const [expendBrand, setExpendBrand] = useState(false);
-
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleExpendBrand = () => {
-    setExpendBrand(!expendBrand);
-  };
   const handleExpendColor = () => {
     setExpendColor(!expendColor);
   };
@@ -40,189 +34,179 @@ const FilterSection = () => {
   };
 
   const clearAllFilters = () => {
-    console.log("clearAllFilters",searchParams)
-    searchParams.forEach((value: any, key: any) => {
+    searchParams.forEach((_: any, key: any) => {
       searchParams.delete(key);
     });
     setSearchParams(searchParams);
   };
 
   return (
-    <div className="-z-50 space-y-5 bg-white">
-      <div className="flex items-center justify-between h-[40px] px-9 lg:border-r">
-        <p className="text-lg font-semibold">Filters</p>
-        <Button
-        onClick={clearAllFilters}
-          size="small"
-          className="text-teal-600 cursor-pointer font-semibold"
+    <div className="space-y-6 bg-cinema-surface/90 border border-white/10 rounded-2xl p-6 backdrop-blur-md shadow-xl text-cinema-cream">
+      {/* Filter Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <FilterListIcon sx={{ color: "#E87532", fontSize: 20 }} />
+          <h2 className="font-serif text-lg tracking-wide text-cinema-cream">Filters</h2>
+        </div>
+        <button
+          onClick={clearAllFilters}
+          className="text-xs font-medium uppercase tracking-wider text-cinema-orange hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
         >
-          clear all
-        </Button>
+          <RestartAltIcon sx={{ fontSize: 16 }} />
+          Clear All
+        </button>
       </div>
-      <Divider />
-      <div className="px-9 space-y-6">
-        {/* <section>
-          <FormControl>
-            <FormLabel
-              sx={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                pb: "14px",
-                color: teal[600],
-              }}
-              className="text-2xl font-semibold"
-              id="brand"
-            >
-              Brand
-            </FormLabel>
-            <RadioGroup
-              onChange={updateFilterParams}
-              aria-labelledby="brand"
-              defaultValue=""
-              name="brand"
-            >
-              {brands
-                .slice(0, expendBrand ? brands.length : 5)
-                .map((item, index) => (
-                  <FormControlLabel
-                    key={item.name}
-                    value={item.value}
-                    control={<Radio size="small" />}
-                    label={item.name}
-                  />
-                ))}
-            </RadioGroup>
-          </FormControl>
-          <div>
-            <button
-              onClick={handleExpendBrand}
-              className="text-teal-600 cursor-pointer hover:text-teal-900 flex items-center"
-            >
-              {expendBrand ? "hide" : `+ ${brands.length - 5} more`}
-            </button>
-          </div>
-        </section>
-        <Divider /> */}
-        <section>
-          <FormControl sx={{ zIndex: 0 }}>
-            <FormLabel
-              sx={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                pb: "14px",
-                color: teal[600],
-              }}
-              className="text-2xl font-semibold"
-              id="color"
-            >
-              Color
-            </FormLabel>
-            <RadioGroup
-              onChange={updateFilterParams}
-              aria-labelledby="color"
-              defaultValue=""
-              name="color"
-            >
-              {colors
-                .slice(0, expendColor ? colors.length : 5)
-                .map((item, index) => (
-                  <FormControlLabel
-                    sx={{ fontSize: "12px" }}
-                    key={item.name}
-                    value={item.name}
-                    control={<Radio size="small" />}
-                    label={
-                      <div className="flex items-center gap-3">
-                        <p>{item.name}</p>
-                        <span
-                          style={{ backgroundColor: item.hex }}
-                          className={` h-5 w-5 rounded-full ${
-                            item.name === "White" ? "border" : "border"
-                          }`}
-                        ></span>
-                      </div>
-                    }
-                  />
-                ))}
-            </RadioGroup>
-          </FormControl>
-          <div>
-            <button
-              onClick={handleExpendColor}
-              className="text-teal-600 cursor-pointer hover:text-teal-900 flex items-center"
-            >
-              {expendColor ? "hide" : `+ ${colors.length - 5} more`}
-            </button>
-          </div>
-        </section>
-        <Divider />
 
-        <section>
-          <FormControl>
-            <FormLabel
-              sx={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                pb: "14px",
-                color: teal[600],
-              }}
-              className="text-2xl font-semibold"
-              id="price"
-            >
-              Price
-            </FormLabel>
-            <RadioGroup
-              name="price"
-              onChange={updateFilterParams}
-              aria-labelledby="price"
-              defaultValue=""
-            >
-              {price.map((item, index) => (
+      {/* Color Filter */}
+      <div className="space-y-3">
+        <FormControl component="fieldset" className="w-full">
+          <FormLabel
+            sx={{
+              fontSize: "12px",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: "#E87532 !important",
+              mb: 1.5,
+            }}
+          >
+            Color Palette
+          </FormLabel>
+          <RadioGroup
+            onChange={updateFilterParams}
+            name="color"
+            value={searchParams.get("color") || ""}
+          >
+            {colors
+              .slice(0, expendColor ? colors.length : 6)
+              .map((item) => (
                 <FormControlLabel
                   key={item.name}
-                  value={item.value}
-                  control={<Radio size="small" />}
-                  label={item.name}
+                  value={item.name}
+                  control={
+                    <Radio
+                      size="small"
+                      sx={{
+                        color: "rgba(245, 240, 232, 0.3)",
+                        "&.Mui-checked": { color: "#E87532" },
+                      }}
+                    />
+                  }
+                  label={
+                    <div className="flex items-center gap-3">
+                      <span
+                        style={{ backgroundColor: item.hex }}
+                        className="h-4 w-4 rounded-full border border-white/30 shadow-inner"
+                      />
+                      <span className="text-sm text-cinema-cream font-light">
+                        {item.name}
+                      </span>
+                    </div>
+                  }
                 />
               ))}
-            </RadioGroup>
-          </FormControl>
-        </section>
-        <Divider />
-        <section>
-          <FormControl>
-            <FormLabel
-              sx={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                pb: "14px",
-                color: teal[600],
-              }}
-              className="text-2xl font-semibold"
-              id="brand"
-            >
-              Discount
-            </FormLabel>
-            <RadioGroup
-              name="discount"
-              onChange={updateFilterParams}
-              aria-labelledby="brand"
-              defaultValue=""
-            >
-              {discount.map((item, index) => (
-                <FormControlLabel
-                  key={item.name}
-                  value={item.value}
-                  control={<Radio size="small" />}
-                  label={item.name}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </section>
+          </RadioGroup>
+        </FormControl>
+        <div>
+          <button
+            onClick={handleExpendColor}
+            className="text-xs uppercase tracking-wider text-cinema-orange hover:text-white transition-colors cursor-pointer pt-1"
+          >
+            {expendColor ? "− Show Less" : `+ ${colors.length - 6} More`}
+          </button>
+        </div>
+      </div>
+
+      <div className="border-t border-white/5 pt-4">
+        {/* Price Filter */}
+        <FormControl component="fieldset" className="w-full">
+          <FormLabel
+            sx={{
+              fontSize: "12px",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: "#E87532 !important",
+              mb: 1.5,
+            }}
+          >
+            Price Range
+          </FormLabel>
+          <RadioGroup
+            name="price"
+            onChange={updateFilterParams}
+            value={searchParams.get("price") || ""}
+          >
+            {price.map((item) => (
+              <FormControlLabel
+                key={item.name}
+                value={item.value}
+                control={
+                  <Radio
+                    size="small"
+                    sx={{
+                      color: "rgba(245, 240, 232, 0.3)",
+                      "&.Mui-checked": { color: "#E87532" },
+                    }}
+                  />
+                }
+                label={
+                  <span className="text-sm text-cinema-cream font-light">
+                    {item.name}
+                  </span>
+                }
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      </div>
+
+      <div className="border-t border-white/5 pt-4">
+        {/* Discount Filter */}
+        <FormControl component="fieldset" className="w-full">
+          <FormLabel
+            sx={{
+              fontSize: "12px",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: "#E87532 !important",
+              mb: 1.5,
+            }}
+          >
+            Minimum Discount
+          </FormLabel>
+          <RadioGroup
+            name="discount"
+            onChange={updateFilterParams}
+            value={searchParams.get("discount") || ""}
+          >
+            {discount.map((item) => (
+              <FormControlLabel
+                key={item.name}
+                value={item.value}
+                control={
+                  <Radio
+                    size="small"
+                    sx={{
+                      color: "rgba(245, 240, 232, 0.3)",
+                      "&.Mui-checked": { color: "#E87532" },
+                    }}
+                  />
+                }
+                label={
+                  <span className="text-sm text-cinema-cream font-light">
+                    {item.name}
+                  </span>
+                }
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
       </div>
     </div>
   );
 };
 
 export default FilterSection;
+

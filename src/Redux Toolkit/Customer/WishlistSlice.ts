@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Wishlist, WishlistState } from "../../types/wishlistTypes";
-import { api } from "../../Config/Api";
+import { wishlistService } from "../../services/serviceFactory";
 
 const initialState: WishlistState = {
   wishlist: null,
@@ -12,17 +12,11 @@ export const getWishlistByUserId = createAsyncThunk(
   "wishlist/getWishlistByUserId",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/wishlist`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-        },
-      });
-      console.log("wishlist fetch ", response.data);
-      return response.data;
+      const data = await wishlistService.fetchUserWishlist(localStorage.getItem("jwt") || "");
+      return data;
     } catch (error: any) {
-      console.log("error ", error);
       return rejectWithValue(
-        error.response?.data.message || "Failed to fetch wishlist"
+        error.response?.data?.message || error.message || "Failed to fetch wishlist"
       );
     }
   }
@@ -31,24 +25,18 @@ export const getWishlistByUserId = createAsyncThunk(
 export const addProductToWishlist = createAsyncThunk(
   "wishlist/addProductToWishlist",
   async (
-    { productId }: {productId: number },
+    { productId }: { productId: number },
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.post(
-        `/api/wishlist/add-product/${productId}`,
-        { },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-          },
-        }
+      const data = await wishlistService.addProductToWishlist(
+        localStorage.getItem("jwt") || "",
+        productId
       );
-      console.log(" add product ", response.data);
-      return response.data;
+      return data;
     } catch (error: any) {
       return rejectWithValue(
-        error.response?.data.message || "Failed to add product to wishlist"
+        error.response?.data?.message || error.message || "Failed to add product to wishlist"
       );
     }
   }

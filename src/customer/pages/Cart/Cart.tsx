@@ -1,15 +1,10 @@
 import {
   Alert,
-  Button,
-  Divider,
   IconButton,
   Snackbar,
-  TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { teal } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CartItemCard from "./CartItemCard";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +14,8 @@ import { fetchUserCart } from "../../../Redux Toolkit/Customer/CartSlice";
 import { CartItem } from "../../../types/cartTypes";
 import { applyCoupon } from "../../../Redux Toolkit/Customer/CouponSlice";
 import CloseIcon from "@mui/icons-material/Close";
-import { Close } from "@mui/icons-material";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -30,18 +26,15 @@ const Cart = () => {
 
   useEffect(() => {
     dispatch(fetchUserCart(localStorage.getItem("jwt") || ""));
-  }, [auth.jwt]);
+  }, [auth.jwt, dispatch]);
 
   const handleChange = (e: any) => {
     setCouponCode(e.target.value);
   };
 
-  const handleApllyCoupon = (apply: string) => {
-    // console.log(couponCode,apply)
-
-    var code = couponCode;
-
-    if (apply == "false") {
+  const handleApplyCoupon = (apply: string) => {
+    let code = couponCode;
+    if (apply === "false") {
       code = cart.cart?.couponCode || "";
     }
 
@@ -54,6 +47,7 @@ const Cart = () => {
       })
     );
   };
+
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
@@ -65,94 +59,129 @@ const Cart = () => {
     }
   }, [coupone.couponApplied, coupone.error]);
 
-  console.log("cart ", coupone);
+  const hasItems = cart.cart && cart.cart.cartItems && cart.cart.cartItems.length > 0;
+
   return (
-    <>
-      {cart.cart && cart.cart?.cartItems.length !== 0 ? (
-        <div className="pt-10 px-5 sm:px-10 md:px-60 lg:px-60 min-h-screen">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 ">
-            <div className="lg:col-span-2 space-y-3 ">
+    <div className="min-h-screen bg-cinema-bg text-cinema-cream pb-24">
+      {/* Top Header */}
+      <div className="relative py-12 px-6 border-b border-white/10 bg-gradient-to-b from-cinema-deep to-cinema-bg text-center">
+        <span className="text-xs uppercase tracking-[0.3em] text-cinema-orange font-semibold">
+          Your Atelier Selection
+        </span>
+        <h1 className="font-serif text-3xl sm:text-4xl text-cinema-cream mt-1">
+          Shopping Bag
+        </h1>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        {hasItems ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Cart Items List (7 cols) */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex justify-between items-center px-1">
+                <span className="text-xs uppercase tracking-wider text-cinema-muted font-medium">
+                  {cart.cart?.cartItems.length} Distinct Artifacts
+                </span>
+              </div>
               {cart.cart?.cartItems.map((item: CartItem) => (
                 <CartItemCard key={item.id} item={item} />
               ))}
             </div>
 
-            <div className="col-span-1  text-sm space-y-3">
-              <div className="border rounded-md px-5 py-3 space-y-5">
-                <div className="">
-                  <div className="flex gap-3 text-sm items-center">
-                    <LocalOfferIcon
-                      sx={{ color: teal[600], fontSize: "17px" }}
-                    />
-                    <span>Apply Coupens</span>
-                  </div>
+            {/* Sidebar Summary & Promo (5 cols) */}
+            <div className="lg:col-span-5 space-y-5 sticky top-24">
+              {/* Promo Coupon Box */}
+              <div className="bg-cinema-surface/90 border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
+                <div className="flex gap-2.5 items-center">
+                  <LocalOfferIcon sx={{ color: "#E87532", fontSize: 18 }} />
+                  <span className="font-serif text-sm text-cinema-cream">Exclusive Atelier Privileges</span>
                 </div>
+
                 {!cart.cart?.couponCode ? (
-                  <div className="flex justify-between items-center">
-                    <TextField
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
                       value={couponCode}
                       onChange={handleChange}
-                      placeholder="coupon code"
-                      className=""
-                      size="small"
+                      placeholder="ENTER PROMO CODE"
+                      className="flex-1 bg-cinema-deep border border-white/10 rounded-xl px-4 py-2.5 text-xs text-cinema-cream placeholder-cinema-muted uppercase tracking-wider focus:outline-none focus:border-cinema-orange transition-colors"
                     />
-                    <Button
-                      onClick={() => handleApllyCoupon("true")}
-                      disabled={couponCode ? false : true}
-                      size="small"
+                    <button
+                      onClick={() => handleApplyCoupon("true")}
+                      disabled={!couponCode}
+                      className="px-5 py-2.5 rounded-xl bg-cinema-orange/20 border border-cinema-orange/40 text-cinema-orange text-xs font-semibold uppercase tracking-wider hover:bg-cinema-orange hover:text-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-cinema-orange transition-all"
                     >
-                      Aplly
-                    </Button>
+                      Apply
+                    </button>
                   </div>
                 ) : (
-                  <div className="flex">
-                    <div className="p-1 pl-5 pr-3 border rounded-full flex gap-2 items-center">
-                      <span className="">{cart.cart.couponCode} Applied</span>
-                      <IconButton
-                        onClick={() => handleApllyCoupon("false")}
-                        size="small"
-                      >
-                        <Close className="text-red-600" />
-                      </IconButton>
+                  <div className="flex items-center justify-between p-3 bg-cinema-orange/10 border border-cinema-orange/30 rounded-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-cinema-orange animate-pulse" />
+                      <span className="text-xs uppercase tracking-wider text-cinema-cream font-medium">
+                        {cart.cart.couponCode} Applied
+                      </span>
                     </div>
+                    <IconButton
+                      onClick={() => handleApplyCoupon("false")}
+                      size="small"
+                      sx={{ color: "rgba(255,255,255,0.6)", "&:hover": { color: "#E87532" } }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
                   </div>
                 )}
               </div>
 
-              <section className="border rounded-md">
-                <PricingCard />
-                <div className="p-5">
-                  <Button
-                    onClick={() => navigate("/checkout/address")}
-                    sx={{ py: "11px" }}
-                    variant="contained"
-                    fullWidth
-                  >
-                    BUY NOW
-                  </Button>
-                </div>
-              </section>
+              {/* Order Calculation */}
+              <PricingCard />
 
-              <div className="border rounded-md px-5 py-4 flex justify-between items-center cursor-pointer">
-                <span>Add From Whishlist</span>
-                <FavoriteIcon sx={{ color: teal[600], fontSize: "21px" }} />
+              {/* Checkout CTA */}
+              <button
+                onClick={() => navigate("/checkout/address")}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-cinema-orange to-cinema-orangeDark text-white text-xs uppercase tracking-[0.2em] font-bold flex items-center justify-center gap-3 shadow-lg shadow-cinema-orange/25 hover:shadow-cinema-orange/40 hover:scale-[1.01] active:scale-[0.99] transition-all"
+              >
+                <span>Proceed To Secure Checkout</span>
+                <ArrowForwardIcon sx={{ fontSize: 16 }} />
+              </button>
+
+              {/* Wishlist Link */}
+              <div
+                onClick={() => navigate("/wishlist")}
+                className="p-4 rounded-xl bg-cinema-surface/50 border border-white/5 hover:border-white/20 flex justify-between items-center cursor-pointer transition-colors"
+              >
+                <span className="text-xs text-cinema-muted">Looking for saved pieces?</span>
+                <div className="flex items-center gap-1.5 text-xs text-cinema-orange uppercase tracking-wider font-semibold">
+                  <FavoriteIcon sx={{ fontSize: 16 }} />
+                  <span>View Wishlist</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="h-[85vh] flex justify-center items-center flex-col">
-          <div className="text-center py-5">
-            <h1 className="text-lg font-medium">hay its feels so light!</h1>
-            <p className="text-gray-500 text-sm">
-              there is nothing in your bag, lets add some items
+        ) : (
+          /* Empty Bag State */
+          <div className="py-24 flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">
+            <div className="w-20 h-20 rounded-full bg-cinema-orange/10 border border-cinema-orange/30 flex items-center justify-center text-cinema-orange shadow-glow-orange/20">
+              <ShoppingBagOutlinedIcon sx={{ fontSize: 40 }} />
+            </div>
+            <h2 className="font-serif text-2xl text-cinema-cream font-normal">
+              Your Atelier Bag is Empty
+            </h2>
+            <p className="text-sm text-cinema-muted font-light leading-relaxed">
+              Explore our curated collections of artisanal couture and timeless essentials.
             </p>
+            <div className="pt-2">
+              <button
+                onClick={() => navigate("/")}
+                className="px-8 py-3 rounded-full bg-cinema-orange text-white text-xs uppercase tracking-widest font-semibold hover:bg-cinema-orangeDark transition-colors shadow-lg shadow-cinema-orange/25"
+              >
+                Explore Curations
+              </button>
+            </div>
           </div>
-          <Button variant="outlined" sx={{ py: "11px" }}>
-            Add Item From Wishlist
-          </Button>
-        </div>
-      )}
+        )}
+      </div>
+
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={snackbarOpen}
@@ -163,13 +192,14 @@ const Cart = () => {
           onClose={handleCloseSnackbar}
           severity={coupone.error ? "error" : "success"}
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", backgroundColor: coupone.error ? "#842029" : "#191A1E", color: "#F5F0E8", border: "1px solid rgba(255,255,255,0.1)" }}
         >
-          {coupone.error ? coupone.error : "Coupon Applied successfully"}
+          {coupone.error ? coupone.error : "Privilege applied successfully"}
         </Alert>
       </Snackbar>
-    </>
+    </div>
   );
 };
 
 export default Cart;
+

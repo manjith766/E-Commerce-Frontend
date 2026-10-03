@@ -1,98 +1,172 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../Redux Toolkit/Store";
 
-const grid = [
-  {"categoryId":"women_lehenga_cholis",
-        "section": "GRID",
-        "name": "women lehenga cholis",
-    image:
-      "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/23807268/2023/6/29/9930b235-5318-4755-abbe-08f99e969e781688026636544LehengaCholi7.jpg",
+const defaultGrid = [
+  {
+    categoryId: "women_lehenga_cholis",
+    section: "GRID",
+    name: "Royal Lehenga Choli",
+    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80",
   },
-  {"categoryId":"men_formal_shoes",
-        "section": "GRID",
-        "name": "men formal shoes",
-    image:
-      "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/24651572/2023/8/25/4fbf6d8c-d093-46c5-a5a6-7dd67c0c76551692964752597HouseofPataudiMenTanFauxLeatherFormalSlipOnLoafers1.jpg",
+  {
+    categoryId: "men_formal_shoes",
+    section: "GRID",
+    name: "Handcrafted Footwear",
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80",
   },
-  {"categoryId":"women_lehenga_cholis",
-        "section": "GRID",
-        "name": "women lehenga cholis",
-    image:
-      "https://images.pexels.com/photos/12730873/pexels-photo-12730873.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  {
+    categoryId: "women_sarees",
+    section: "GRID",
+    name: "Banarasi Heritage Silk",
+    image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1000&q=80",
   },
-  {"categoryId":"men_sherwanis",
-        "section": "GRID",
-        "name": "men sherwanis",
-    image:
-      "https://shreeman.in/cdn/shop/files/20_3cfbd5a3-ecb6-482a-b798-7ffd9de1c784.jpg?v=1712061674&width=700",
+  {
+    categoryId: "men_sherwanis",
+    section: "GRID",
+    name: "Imperial Sherwanis",
+    image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=80",
   },
-  {"categoryId":"women_jewellery",
-        "section": "GRID",
-        "name": "women jewellery",
-    image:
-      "https://media.istockphoto.com/id/1276740597/photo/indian-traditional-gold-necklace.jpg?b=1&s=612x612&w=0&k=20&c=S-QnNZKqf2u3L-GIaDiIinNRU74GBWQaIDwY7gYJboY=",
+  {
+    categoryId: "women_jewellery",
+    section: "GRID",
+    name: "High Jewellery & Zari",
+    image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80",
   },
-  {"categoryId":"women_footwear",
-        "section": "GRID",
-        "name": "women footwear",
-    image:
-      "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/13837166/2021/8/19/04e40e02-4c56-4705-94d0-f444b29973aa1629373611707-House-of-Pataudi-Women-Maroon-Embellished-Handcrafted-Wedges-1.jpg",
+  {
+    categoryId: "women_footwear",
+    section: "GRID",
+    name: "Embellished Wedges",
+    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
   },
 ];
+
 const TopBrand = () => {
-  const {homePage}=useAppSelector(store=>store)
+  const { homePage } = useAppSelector((store) => store);
+  const navigate = useNavigate();
+
+  const items = homePage.homePageData?.grid && homePage.homePageData.grid.length >= 6
+    ? homePage.homePageData.grid
+    : defaultGrid;
+
   return (
-    <div className="grid gap-4 grid-rows-12 grid-cols-12 lg:h-[600px] px-5 lg:px-20">
-      <div className=" col-span-3 row-span-12  text-white  rounded ">
-        <img
-          className="w-full h-full object-cover border-fuchsia-800 lg:border-[9px]s rounded-md"
-          src={homePage.homePageData?.grid[0].image}
-          alt=""
-        />
+    <div className="py-16 px-6 lg:px-16 max-w-7xl mx-auto">
+      {/* Editorial Header */}
+      <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+        <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#E87532]">
+          Curated Spotlight
+        </span>
+        <h2 className="font-editorial text-3xl lg:text-4xl font-bold tracking-tight text-[#F5F0E8]">
+          THE WEDDING & FESTIVE COUTURE
+        </h2>
+        <p className="text-xs text-[#A6A29B] font-light">
+          An opulent celebration of artisanal silks, hand-embroidered silhouettes, and heirloom treasures.
+        </p>
       </div>
 
-      <div className="col-span-2 row-span-6  text-white rounded">
-        <img
-          className="w-full h-full object-cover border-fuchsia-800 lg:border-[9px]s rounded-md"
-          src={homePage.homePageData?.grid[1].image}
-          alt=""
-        />
-      </div>
+      {/* Asymmetric Gallery */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 lg:h-[580px]">
+        {/* Item 0 */}
+        <div 
+          onClick={() => navigate(`/products/${items[0]?.categoryId}`)}
+          className="col-span-1 sm:col-span-1 lg:col-span-3 lg:row-span-12 relative rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-xl min-h-[300px]"
+        >
+          <img
+            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+            src={items[0]?.image}
+            alt={items[0]?.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+          <div className="absolute bottom-5 left-5 right-5">
+            <span className="text-[10px] uppercase tracking-widest text-[#E87532] font-semibold">Bridal</span>
+            <p className="text-sm font-editorial font-bold text-[#F5F0E8] mt-0.5">{items[0]?.name}</p>
+          </div>
+        </div>
 
-      <div className="col-span-4 row-span-6  text-white  rounded ">
-        <img
-          className="w-full h-full object-cover object-top border-fuchsia-800 lg:border-[9px]s rounded-md"
-          src={homePage.homePageData?.grid[2].image}
-          alt=""
-        />
-      </div>
+        {/* Item 1 */}
+        <div 
+          onClick={() => navigate(`/products/${items[1]?.categoryId}`)}
+          className="col-span-1 sm:col-span-1 lg:col-span-2 lg:row-span-6 relative rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-xl min-h-[200px]"
+        >
+          <img
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            src={items[1]?.image}
+            alt={items[1]?.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-80"></div>
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-xs font-editorial font-bold text-[#F5F0E8]">{items[1]?.name}</p>
+          </div>
+        </div>
 
-      <div className="col-span-3 row-span-12  text-white  rounded ">
-        <img
-          className="w-full h-full object-cover object-top border-fuchsia-800 lg:border-[9px]s rounded-md"
-          src={homePage.homePageData?.grid[3].image}
-          alt=""
-        />
-      </div>
+        {/* Item 2 */}
+        <div 
+          onClick={() => navigate(`/products/${items[2]?.categoryId}`)}
+          className="col-span-1 sm:col-span-1 lg:col-span-4 lg:row-span-6 relative rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-xl min-h-[200px]"
+        >
+          <img
+            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+            src={items[2]?.image}
+            alt={items[2]?.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-80"></div>
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-sm font-editorial font-bold text-[#F5F0E8]">{items[2]?.name}</p>
+          </div>
+        </div>
 
-      <div className="col-span-4 row-span-6  text-white  rounded ">
-        <img
-          className="w-full h-full object-cover object-top border-fuchsia-800 lg:border-[9px]s rounded-md"
-          src={homePage.homePageData?.grid[4].image}
-          alt=""
-        />
-      </div>
-      <div className="col-span-2 row-span-6  text-white rounded ">
-        <img
-          className="w-full h-full object-cover border-fuchsia-800 lg:border-[9px]s rounded-md"
-          src={homePage.homePageData?.grid[5].image}
-          alt=""
-        />
-      </div>
+        {/* Item 3 */}
+        <div 
+          onClick={() => navigate(`/products/${items[3]?.categoryId}`)}
+          className="col-span-1 sm:col-span-1 lg:col-span-3 lg:row-span-12 relative rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-xl min-h-[300px]"
+        >
+          <img
+            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+            src={items[3]?.image}
+            alt={items[3]?.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-80"></div>
+          <div className="absolute bottom-5 left-5 right-5">
+            <span className="text-[10px] uppercase tracking-widest text-[#E87532] font-semibold">Grooms</span>
+            <p className="text-sm font-editorial font-bold text-[#F5F0E8] mt-0.5">{items[3]?.name}</p>
+          </div>
+        </div>
 
-      {/* https://tristenwallace.com/wp-content/uploads/2022/06/wed-7.jpg */}
+        {/* Item 4 */}
+        <div 
+          onClick={() => navigate(`/products/${items[4]?.categoryId}`)}
+          className="col-span-1 sm:col-span-1 lg:col-span-4 lg:row-span-6 relative rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-xl min-h-[200px]"
+        >
+          <img
+            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+            src={items[4]?.image}
+            alt={items[4]?.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-80"></div>
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-sm font-editorial font-bold text-[#F5F0E8]">{items[4]?.name}</p>
+          </div>
+        </div>
+
+        {/* Item 5 */}
+        <div 
+          onClick={() => navigate(`/products/${items[5]?.categoryId}`)}
+          className="col-span-1 sm:col-span-1 lg:col-span-2 lg:row-span-6 relative rounded-2xl overflow-hidden border border-white/10 group cursor-pointer shadow-xl min-h-[200px]"
+        >
+          <img
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            src={items[5]?.image}
+            alt={items[5]?.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-80"></div>
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-xs font-editorial font-bold text-[#F5F0E8]">{items[5]?.name}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default TopBrand;
+

@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { Payouts } from "../../types/payoutsType";
-import { Transaction } from "../../types/Transaction";
-import { api } from "../../Config/Api";
+import { sellerService } from "../../services/serviceFactory";
 
 interface PayoutsState {
   payouts: Payouts[];
@@ -25,18 +23,10 @@ export const fetchPayoutsBySeller = createAsyncThunk<
   { rejectValue: string }
 >("payouts/fetchPayoutsBySeller", async (jwt, { rejectWithValue }) => {
   try {
-    const response = await api.get<Payouts[]>("/api/payouts/seller", {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-    });
-    console.log("Payouts ",response.data)
-    return response.data;
+    const data = await sellerService.fetchSellerPayouts(jwt);
+    return data;
   } catch (error: any) {
-    if (error.response) {
-      return rejectWithValue(error.response.data.message);
-    }
-    return rejectWithValue("Failed to fetch payouts");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch payouts");
   }
 });
 
@@ -46,13 +36,12 @@ export const fetchPayoutById = createAsyncThunk<
   { rejectValue: string }
 >("payouts/fetchPayoutById", async (id, { rejectWithValue }) => {
   try {
-    const response = await api.get<Payouts>(`/api/payouts/${id}`);
-    return response.data;
+    const payouts = await sellerService.fetchAllPayouts();
+    const found = payouts.find((p) => p.id === Number(id));
+    if (!found) throw new Error("Payout not found");
+    return found;
   } catch (error: any) {
-    if (error.response) {
-      return rejectWithValue(error.response.data.message);
-    }
-    return rejectWithValue("Failed to fetch payout");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch payout");
   }
 });
 
@@ -62,19 +51,10 @@ export const updatePayoutStatus = createAsyncThunk<
   { rejectValue: string }
 >("payouts/updatePayoutStatus", async ({ id, status }, { rejectWithValue }) => {
   try {
-    const response = await api.put<Payouts>(
-      `/api/payouts/${id}/status`,
-      null,
-      {
-        params: { status },
-      }
-    );
-    return response.data;
+    const data = await sellerService.updatePayoutStatus(id, status);
+    return data;
   } catch (error: any) {
-    if (error.response) {
-      return rejectWithValue(error.response.data.message);
-    }
-    return rejectWithValue("Failed to update payout status");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to update payout status");
   }
 });
 
@@ -110,7 +90,7 @@ const payoutsSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      //   update payouts
+      // update payouts
       .addCase(updatePayoutStatus.pending, (state) => {
         state.loading = true;
         state.error = null;

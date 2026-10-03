@@ -1,39 +1,122 @@
 :root {
-  --primary-color: #00927c;
-  --secondary-color: #2ecc71;
+  --primary-color: #E87532;
+  --secondary-color: #C95E24;
+  --color-background: #101114;
+  --color-surface: #191A1E;
+  --color-deep: #0B0C0E;
+  --color-orange: #E87532;
+  --color-orange-dark: #C95E24;
+  --color-cream: #F5F0E8;
+  --color-muted: #A6A29B;
+  --color-border: rgba(245, 240, 232, 0.12);
 }
 
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
+  background-color: #101114;
+  color: #F5F0E8;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+  overflow-x: hidden;
 }
 
-.logo{
-  font-family: "Pacifico", cursive;
-  font-weight: 400;
-  font-style: normal;
-  color: teal;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
+::-webkit-scrollbar-track {
+  background: #0B0C0E;
+}
 
+::-webkit-scrollbar-thumb {
+  background: #2A2C34;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E87532;
+}
+
+/* Editorial Typography */
+.font-editorial {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.05em;
+}
+
+.font-serif-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.logo {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #F5F0E8;
+  text-transform: uppercase;
+}
+
+.logo-accent {
+  color: #E87532;
+}
+
+/* Glassmorphism & Surface Utilities */
+.cinema-glass {
+  background: rgba(25, 26, 30, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 240, 232, 0.1);
+}
+
+.cinema-glass-subtle {
+  background: rgba(16, 17, 20, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.cinema-card {
+  background: #191A1E;
+  border: 1px solid rgba(245, 240, 232, 0.08);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cinema-card:hover {
+  border-color: rgba(232, 117, 50, 0.4);
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(232, 117, 50, 0.15);
+  transform: translateY(-4px);
+}
+
+.glow-orange {
+  box-shadow: 0 0 25px rgba(232, 117, 50, 0.35);
+}
+
+.text-glow {
+  text-shadow: 0 0 30px rgba(232, 117, 50, 0.4);
+}
 
 .blur-bg {
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper  {
-
-   box-shadow: rgba(225, 225, 225, 0.24) 0px 3px 8px !important;
- 
+/* Slick Carousel overrides for dark theme */
+.slick-dots li button:before {
+  color: #F5F0E8 !important;
+  opacity: 0.35 !important;
 }
 
-
-
+.slick-dots li.slick-active button:before {
+  color: #E87532 !important;
+  opacity: 1 !important;
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+

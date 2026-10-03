@@ -1,6 +1,5 @@
 import React from "react";
-import { Avatar, IconButton } from "@mui/material";
-import { Rating, Box, Typography, Grid } from "@mui/material";
+import { Avatar, IconButton, Rating, Box } from "@mui/material";
 import { Review } from "../../../types/reviewTypes";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { red } from "@mui/material/colors";
@@ -12,61 +11,76 @@ interface ProductReviewCardProps {
 }
 
 const ProductReviewCard = ({ item }: ProductReviewCardProps) => {
-  const [value, setValue] = React.useState(4.5);
-  const { auth, user } = useAppSelector(store => store);
-  const dispatch = useAppDispatch()
+  const { user } = useAppSelector(store => store);
+  const dispatch = useAppDispatch();
   const handleDeleteReview = () => {
-    dispatch(deleteReview({ reviewId: item.id, jwt: localStorage.getItem("jwt") || "" }))
+    dispatch(deleteReview({ reviewId: item.id, jwt: localStorage.getItem("jwt") || "" }));
   };
+
   return (
-    <div className="flex justify-between">
-      <Grid container spacing={2} gap={3}>
-        <Grid item xs={1}>
-          <Box>
-            <Avatar
-              className="text-white"
-              sx={{ width: 56, height: 56, bgcolor: "#9155FD" }}
-              alt={item.user.fullName}
-              src=""
-            >
-              {item.user.fullName[0].toUpperCase()}
-            </Avatar>
-          </Box>
-        </Grid>
-        <Grid item xs={9}>
-          <div className="space-y-2">
-            <div className="">
-              <p className="font-semibold text-lg">{item.user.fullName}</p>
-              <p className="opacity-70">{item.createdAt}</p>
-            </div>
-            <div>
+    <div className="flex justify-between items-start py-3 text-cinema-cream">
+      <div className="flex gap-4">
+        <Avatar
+          sx={{
+            width: 48,
+            height: 48,
+            bgcolor: "#E87532",
+            color: "#fff",
+            fontFamily: "serif",
+            fontWeight: "bold",
+            border: "1px solid rgba(255,255,255,0.2)"
+          }}
+          alt={item.user.fullName}
+        >
+          {item.user.fullName?.[0]?.toUpperCase() || "P"}
+        </Avatar>
 
-
-              <Rating
-                readOnly
-                value={item.rating}
-                name="half-rating"
-                defaultValue={2.5}
-                precision={0.5}
-              />
-
-            </div>
-            <p>
-              {item.reviewText}
-            </p>
-            <div>
-              {item.productImages.map((image) => <img key={image} className="w-24 h-24 object-cover" src={image} alt="" />)}
-            </div>
+        <div className="space-y-2">
+          <div>
+            <h4 className="font-serif text-base text-cinema-cream font-medium">
+              {item.user.fullName}
+            </h4>
+            <p className="text-xs text-cinema-muted font-light">{item.createdAt}</p>
           </div>
-        </Grid>
-      </Grid>
-      {item.user.id === user.user?.id && <div className="">
-        <IconButton onClick={handleDeleteReview}>
-          <DeleteIcon sx={{ color: red[700] }} />
+
+          <Rating
+            readOnly
+            value={item.rating}
+            precision={0.5}
+            sx={{
+              fontSize: 16,
+              "& .MuiRating-iconFilled": { color: "#E87532" },
+              "& .MuiRating-iconEmpty": { color: "rgba(255,255,255,0.2)" },
+            }}
+          />
+
+          <p className="text-sm text-cinema-cream/90 font-light leading-relaxed max-w-2xl">
+            {item.reviewText}
+          </p>
+
+          {item.productImages?.length > 0 && (
+            <div className="flex gap-2 pt-2">
+              {item.productImages.map((image, idx) => (
+                <img
+                  key={idx}
+                  className="w-20 h-20 object-cover rounded-xl border border-white/10"
+                  src={image}
+                  alt={`review-attachment-${idx}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {item.user.id === user.user?.id && (
+        <IconButton onClick={handleDeleteReview} sx={{ color: red[400] }}>
+          <DeleteIcon fontSize="small" />
         </IconButton>
-      </div>}
+      )}
     </div>
   );
 };
 
 export default ProductReviewCard;
+

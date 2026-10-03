@@ -6,71 +6,103 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../../Redux Toolkit/Store";
 import { performLogout } from "../../../Redux Toolkit/Customer/AuthSlice";
 
-export interface Menu{
+export interface Menu {
     name: string;
     path: string;
     icon: React.ReactElement<any>;
     activeIcon: React.ReactElement<any>;
 }
 
-interface DrawerListProps{
-    toggleDrawer?:any;
-    menu:Menu[];
-    menu2:Menu[];
+interface DrawerListProps {
+    toggleDrawer?: any;
+    menu: Menu[];
+    menu2: Menu[];
 }
 
-const DrawerList = ({ toggleDrawer,menu,menu2 }: DrawerListProps) => {
-
-    const dispatch = useAppDispatch()
-
-
+const DrawerList = ({ toggleDrawer, menu, menu2 }: DrawerListProps) => {
+    const dispatch = useAppDispatch();
     const location = useLocation();
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        dispatch(performLogout())
-    }
+        dispatch(performLogout());
+    };
 
-    const handleClick = (item: any)=>() => {
-
+    const handleClick = (item: any) => () => {
         if (item.name === "Logout") {
-            handleLogout()
-
+            handleLogout();
         }
         navigate(item.path);
-        if(toggleDrawer) toggleDrawer(false)();
-    }
+        if (toggleDrawer) toggleDrawer(false)();
+    };
+
     return (
-        <div className="h-full">
-            <div
-                className="flex flex-col  justify-between  h-full w-[300px] border-r py-5"
-                
-            >
+        <div className="h-full bg-cinema-surface text-cinema-cream">
+            <div className="flex flex-col justify-between h-full w-[280px] border-r border-white/10 py-6">
                 <div>
-                    <div className="space-y-2">
-                        {menu.map((item, index) => (
-                            <div key={item.name}
-                                onClick={handleClick(item)}
-                                className="pr-9 cursor-pointer">
-                                <p className={`${item.path === location.pathname ? "bg-primary-color text-white " : "text-primary-color"} flex items-center px-5 py-3 rounded-r-full`}>
-                                    <ListItemIcon>{location.pathname === item.path ? item.activeIcon : item.icon}</ListItemIcon>
-                                    <ListItemText primary={item.name} />
-                                </p>
-                            </div>
-                        ))}
+                    {/* Brand Pill in Sidebar */}
+                    <div className="px-6 pb-6 mb-4 border-b border-white/10">
+                        <span className="text-[10px] uppercase tracking-[0.25em] text-cinema-orange font-semibold">
+                            Operational Hub
+                        </span>
+                        <h3 className="font-serif text-lg text-cinema-cream font-medium">
+                            Atelier Console
+                        </h3>
+                    </div>
+
+                    <div className="space-y-1.5 px-3">
+                        {menu.map((item) => {
+                            const isActive = location.pathname === item.path;
+                            return (
+                                <div
+                                    key={item.name}
+                                    onClick={handleClick(item)}
+                                    className="cursor-pointer"
+                                >
+                                    <div
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all ${
+                                            isActive
+                                                ? "bg-cinema-orange text-white shadow-lg shadow-cinema-orange/25 font-bold"
+                                                : "text-cinema-muted hover:text-cinema-cream hover:bg-white/5"
+                                        }`}
+                                    >
+                                        <div className={isActive ? "text-white" : "text-cinema-orange"}>
+                                            {isActive ? item.activeIcon : item.icon}
+                                        </div>
+                                        <span>{item.name}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
-                <div className="space-y-4">
-                    <Divider />
-                    <div className="space-y-2">
-                        {menu2.map((item, index) => (
-                            <div onClick={handleClick(item)} className="pr-9 cursor-pointer" key={item.name}>
-                                <p className={`${item.path === location.pathname ? " bg-primary-color text-white " : "text-primary-color"} flex items-center px-5 py-3 rounded-r-full`}>
-                                    <ListItemIcon>{location.pathname === item.path ? item.activeIcon : item.icon}</ListItemIcon>
-                                    <ListItemText primary={item.name} />
-                                </p>
-                            </div>
-                        ))}
+
+                <div className="space-y-4 px-3">
+                    <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.08)" }} />
+                    <div className="space-y-1.5">
+                        {menu2.map((item) => {
+                            const isActive = location.pathname === item.path;
+                            return (
+                                <div
+                                    onClick={handleClick(item)}
+                                    className="cursor-pointer"
+                                    key={item.name}
+                                >
+                                    <div
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all ${
+                                            isActive
+                                                ? "bg-cinema-orange text-white shadow-lg shadow-cinema-orange/25 font-bold"
+                                                : "text-cinema-muted hover:text-cinema-cream hover:bg-white/5"
+                                        }`}
+                                    >
+                                        <div className={isActive ? "text-white" : "text-cinema-orange"}>
+                                            {isActive ? item.activeIcon : item.icon}
+                                        </div>
+                                        <span>{item.name}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -79,3 +111,4 @@ const DrawerList = ({ toggleDrawer,menu,menu2 }: DrawerListProps) => {
 };
 
 export default DrawerList;
+

@@ -1,42 +1,47 @@
-import { Alert, Divider, Snackbar } from '@mui/material'
-import path from 'path'
-import React, { useEffect, useState } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import Order from './Order'
-import UserDetails from './UserDetails'
-import SavedCards from './SavedCards'
-import OrderDetails from './OrderDetails'
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store'
-import { performLogout } from '../../../Redux Toolkit/Customer/AuthSlice'
-import userEvent from '@testing-library/user-event'
-import Addresses from './Adresses'
+import { Alert, Divider, Snackbar } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import Order from './Order';
+import UserDetails from './UserDetails';
+import SavedCards from './SavedCards';
+import OrderDetails from './OrderDetails';
+import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
+import { performLogout } from '../../../Redux Toolkit/Customer/AuthSlice';
+import Addresses from './Adresses';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const menu = [
-    { name: "orders", path: "/account/orders" },
-    { name: "profile", path: "/account/profile" },
-    { name: "Saved Cards", path: "/account/saved-card" },
+    { name: "My Orders", path: "/account/orders", icon: <ShoppingBagOutlinedIcon sx={{ fontSize: 18 }} /> },
+    { name: "Patron Profile", path: "/account/profile", icon: <PersonOutlineIcon sx={{ fontSize: 18 }} /> },
+    { name: "Saved Cards", path: "/account/saved-card", icon: <CreditCardIcon sx={{ fontSize: 18 }} /> },
+    { name: "Shipping Addresses", path: "/account/addresses", icon: <LocationOnOutlinedIcon sx={{ fontSize: 18 }} /> },
+    { name: "Sign Out", path: "/", icon: <LogoutIcon sx={{ fontSize: 18 }} /> }
+];
 
-    { name: "Addresses", path: "/account/addresses" },
-    { name: "Logout", path: "/" }
-]
 const Profile = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const dispatch = useAppDispatch()
-    const { user,orders } = useAppSelector(store => store)
+    const dispatch = useAppDispatch();
+    const { user, orders } = useAppSelector(store => store);
     const [snackbarOpen, setOpenSnackbar] = useState(false);
 
     const handleLogout = () => {
-        dispatch(performLogout())
-        navigate("/")
-    }
+        dispatch(performLogout());
+        navigate("/");
+    };
 
     const handleClick = (item: any) => {
-        if (item.name === "Logout") {
-            handleLogout()
+        if (item.name === "Sign Out") {
+            handleLogout();
+        } else {
+            navigate(`${item.path}`);
         }
-        else navigate(`${item.path}`)
-    }
+    };
+
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
     };
@@ -45,40 +50,64 @@ const Profile = () => {
         if (user.profileUpdated || orders.orderCanceled || user.error) {
             setOpenSnackbar(true);
         }
-    }, [user.profileUpdated,orders.orderCanceled]);
+    }, [user.profileUpdated, orders.orderCanceled, user.error]);
+
     return (
-        <div className='px-5 lg:px-52 min-h-screen mt-10 '>
-
-            <div>
-                <h1 className='text-xl font-bold pb-5'>{user.user?.fullName}</h1>
+        <div className="min-h-screen bg-cinema-bg text-cinema-cream pb-24">
+            {/* Header Banner */}
+            <div className="relative py-12 px-6 border-b border-white/10 bg-gradient-to-b from-cinema-deep to-cinema-bg text-center">
+                <span className="text-xs uppercase tracking-[0.3em] text-cinema-orange font-semibold">
+                    Client Concierge
+                </span>
+                <h1 className="font-serif text-3xl sm:text-4xl text-cinema-cream mt-1 font-normal">
+                    {user.user?.fullName || "Patron Account"}
+                </h1>
+                <p className="text-xs text-cinema-muted mt-1 font-light">
+                    {user.user?.email || "Manage your orders and personal credentials"}
+                </p>
             </div>
-            <Divider />
-            <div className='grid grid-cols-1 lg:grid-cols-3 lg:min-h-[78vh]'>
 
-                <div className="col-span-1 lg:border-r lg:pr-5 py-5 h-full  flex flex-row flex-wrap lg:flex-col gap-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    {/* Navigation Sidebar (3 cols) */}
+                    <div className="lg:col-span-3 space-y-2 bg-cinema-surface/70 border border-white/10 rounded-2xl p-4 backdrop-blur-md">
+                        {menu.map((item) => {
+                            const isActive = location.pathname === item.path || 
+                                (item.path === "/account/profile" && location.pathname === "/account");
+                            return (
+                                <button
+                                    key={item.name}
+                                    onClick={() => handleClick(item)}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all text-left ${
+                                        isActive
+                                            ? "bg-cinema-orange text-white shadow-md shadow-cinema-orange/30 font-bold"
+                                            : "text-cinema-muted hover:text-cinema-cream hover:bg-white/5"
+                                    }`}
+                                >
+                                    <span className={isActive ? "text-white" : "text-cinema-orange"}>
+                                        {item.icon}
+                                    </span>
+                                    <span>{item.name}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
 
-                    {menu.map((item, index) => <div
-                        onClick={() => handleClick(item)}
-                        className={`${menu.length - 1 !== index ? "border-b" : ""} ${item.path == location.pathname ? "bg-primary-color text-white" : ""} px-5 py-3 rounded-md hover:bg-teal-500 hover:text-white cursor-pointer `}>
-                        <p>{item.name}</p>
-                    </div>)}
-
+                    {/* Content Panel (9 cols) */}
+                    <div className="lg:col-span-9 bg-cinema-surface/50 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-md">
+                        <Routes>
+                            <Route path="/" element={<UserDetails />} />
+                            <Route path="/orders" element={<Order />} />
+                            <Route path="/orders/:orderId/:orderItemId" element={<OrderDetails />} />
+                            <Route path="/profile" element={<UserDetails />} />
+                            <Route path="/saved-card" element={<SavedCards />} />
+                            <Route path="/addresses" element={<Addresses />} />
+                        </Routes>
+                    </div>
                 </div>
-                <div className='lg:col-span-2 lg:pl-5 py-5'>
-
-                    <Routes>
-                        <Route path='/' element={<UserDetails />} />
-                        <Route path='/orders' element={<Order />} />
-                        <Route path='/orders/:orderId/:orderItemId' element={<OrderDetails />} />
-                        <Route path='/profile' element={<UserDetails />} />
-                        <Route path='/saved-card' element={<SavedCards />} />
-                        <Route path='/addresses' element={<Addresses />} />
-                        {/* addresses */}
-                    </Routes>
-
-                </div>
-
             </div>
+
             <Snackbar
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 open={snackbarOpen}
@@ -89,13 +118,13 @@ const Profile = () => {
                     onClose={handleCloseSnackbar}
                     severity={user.error ? "error" : "success"}
                     variant="filled"
-                    sx={{ width: "100%" }}
+                    sx={{ width: "100%", bgcolor: user.error ? "#842029" : "#191A1E", color: "#F5F0E8", border: "1px solid rgba(255,255,255,0.1)" }}
                 >
-                    {user.error ? user.error : orders.orderCanceled?"order canceled successfully": "success"}
+                    {user.error ? user.error : orders.orderCanceled ? "Order cancelled successfully" : "Profile credentials updated"}
                 </Alert>
             </Snackbar>
         </div>
-    )
-}
+    );
+};
 
-export default Profile
+export default Profile;

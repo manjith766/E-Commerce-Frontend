@@ -1,23 +1,33 @@
-import { Button, CircularProgress, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import OTPInput from '../../components/OtpFild/OTPInput'
-import { FormikValues, useFormik } from 'formik';
-import { useDispatch } from 'react-redux';
+import { CircularProgress, TextField } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import OTPInput from '../../components/OtpFild/OTPInput';
+import { useFormik } from 'formik';
 import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
-import { sendLoginOtp, verifyLoginOtp } from '../../../Redux Toolkit/Seller/sellerAuthenticationSlice';
 import { useNavigate } from 'react-router-dom';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { sendLoginSignupOtp, signup } from '../../../Redux Toolkit/Customer/AuthSlice';
 
-const SignupForm = () => {
+const inputStyles = {
+  "& .MuiOutlinedInput-root": {
+    backgroundColor: "rgba(16, 17, 20, 0.8)",
+    borderRadius: "0.75rem",
+    color: "#F5F0E8",
+    "& fieldset": { borderColor: "rgba(255, 255, 255, 0.15)" },
+    "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
+    "&.Mui-focused fieldset": { borderColor: "#E87532" },
+  },
+  "& .MuiInputLabel-root": {
+    color: "#A6A29B",
+    "&.Mui-focused": { color: "#E87532" },
+  },
+};
 
+const SignupForm = () => {
     const navigate = useNavigate();
     const [otp, setOtp] = useState("");
-    const [isOtpSent, setIsOtpSent] = useState(false)
-    const [timer, setTimer] = useState<number>(30); // Timer state
+    const [timer, setTimer] = useState<number>(30);
     const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
     const dispatch = useAppDispatch();
-    const { auth } = useAppSelector(store => store)
+    const { auth } = useAppSelector(store => store);
 
     const formik = useFormik({
         initialValues: {
@@ -25,36 +35,28 @@ const SignupForm = () => {
             otp: '',
             name: ""
         },
-
         onSubmit: (values: any) => {
-            // Handle form submission
-            dispatch(signup({ fullName: values.name, email: values.email, otp, navigate }))
-            console.log('Form data:', values);
+            dispatch(signup({ fullName: values.name, email: values.email, otp, navigate }));
         }
     });
 
-    const handleOtpChange = (otp: any) => {
-
-        setOtp(otp);
-
+    const handleOtpChange = (newOtp: any) => {
+        setOtp(newOtp);
     };
 
     const handleResendOTP = () => {
-        // Implement OTP resend logic
-        dispatch(sendLoginSignupOtp({ email: formik.values.email }))
-        console.log('Resend OTP');
+        dispatch(sendLoginSignupOtp({ email: formik.values.email }));
         setTimer(30);
         setIsTimerActive(true);
     };
 
     const handleSentOtp = () => {
-        setIsOtpSent(true);
         handleResendOTP();
-    }
+    };
 
     const handleLogin = () => {
-        formik.handleSubmit()
-    }
+        formik.handleSubmit();
+    };
 
     useEffect(() => {
         let interval: NodeJS.Timeout | undefined;
@@ -65,7 +67,7 @@ const SignupForm = () => {
                     if (prev === 1) {
                         clearInterval(interval);
                         setIsTimerActive(false);
-                        return 30; // Reset timer for next OTP request
+                        return 30;
                     }
                     return prev - 1;
                 });
@@ -78,88 +80,83 @@ const SignupForm = () => {
     }, [isTimerActive]);
 
     return (
-        <div>
-            <h1 className='text-center font-bold text-xl text-primary-color pb-5'>Signup</h1>
-            <form className="space-y-5">
+        <form onSubmit={formik.handleSubmit} className="space-y-4">
+            <TextField
+                fullWidth
+                size="small"
+                name="email"
+                label="Your Email Address"
+                sx={inputStyles}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email ? formik.errors.email as string : undefined}
+            />
 
-
-
-                <TextField
-                    fullWidth
-                    name="email"
-                    label="Enter Your Email"
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.email && Boolean(formik.errors.email)}
-                    helperText={formik.touched.email ? formik.errors.email as string : undefined}
-                />
-
-                {auth.otpSent && <div className="space-y-2">
-                    <p className="font-medium text-sm">
-                        * Enter OTP sent to your mobile number
+            {auth.otpSent && (
+                <div className="space-y-3 pt-2">
+                    <p className="text-xs text-cinema-muted">
+                        Enter 6-digit verification token sent to your email:
                     </p>
-                    <OTPInput
-                        length={6}
-                        onChange={handleOtpChange}
-                        error={false}
-                    />
-                    <p className="text-xs space-x-2">
+                    <div className="flex justify-center py-1">
+                        <OTPInput
+                            length={6}
+                            onChange={handleOtpChange}
+                            error={false}
+                        />
+                    </div>
+                    <div className="text-xs text-center text-cinema-muted">
                         {isTimerActive ? (
-                            <span>Resend OTP in {timer} seconds</span>
+                            <span>Resend verification in {timer}s</span>
                         ) : (
-                            <>
-                                Didn’t receive OTP?{" "}
-                                <span
-                                    onClick={handleResendOTP}
-                                    className="text-teal-600 cursor-pointer hover:text-teal-800 font-semibold"
-                                >
-                                    Resend OTP
-                                </span>
-                            </>
+                            <button
+                                type="button"
+                                onClick={handleResendOTP}
+                                className="text-cinema-orange hover:text-white font-medium transition-colors"
+                            >
+                                Request New Code
+                            </button>
                         )}
-                    </p>
-                    {formik.touched.otp && formik.errors.otp && <p>{formik.errors.otp as string}</p>}
-                </div>}
+                    </div>
+                    <TextField
+                        fullWidth
+                        size="small"
+                        name="name"
+                        label="Your Full Legal Name"
+                        sx={inputStyles}
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.name && Boolean(formik.errors.name)}
+                        helperText={formik.touched.name ? formik.errors.name as string : undefined}
+                    />
+                </div>
+            )}
 
-                {auth.otpSent && <TextField
-                    fullWidth
-                    name="name"
-                    label="Enter Your Name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.name && Boolean(formik.errors.name)}
-                    helperText={formik.touched.name ? formik.errors.name as string : undefined}
-                />}
-
-                {auth.otpSent && <div>
-                    <Button
-                        disabled={auth.loading}
+            <div className="pt-2">
+                {auth.otpSent ? (
+                    <button
+                        type="button"
+                        disabled={auth.loading || !otp || otp.length < 6 || !formik.values.name}
                         onClick={handleLogin}
-                        fullWidth variant='contained' sx={{ py: "11px" }}> {auth.loading ? <CircularProgress size="small"
-                            sx={{ width: "27px", height: "27px" }} /> : " Signup "}  </Button>
-                </div>}
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cinema-orange to-cinema-orangeDark text-white text-xs uppercase tracking-widest font-bold shadow-lg shadow-cinema-orange/25 hover:shadow-cinema-orange/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 transition-all flex items-center justify-center gap-2"
+                    >
+                        {auth.loading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Register Patron Profile"}
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        disabled={auth.loading || !formik.values.email}
+                        onClick={handleSentOtp}
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cinema-orange to-cinema-orangeDark text-white text-xs uppercase tracking-widest font-bold shadow-lg shadow-cinema-orange/25 hover:shadow-cinema-orange/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 transition-all flex items-center justify-center gap-2"
+                    >
+                        {auth.loading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Request Verification Code"}
+                    </button>
+                )}
+            </div>
+        </form>
+    );
+};
 
-                {!auth.otpSent && <Button
-                    fullWidth
-                    variant='contained'
-                    onClick={handleSentOtp}
-                    disabled={auth.loading}
-                    sx={{ py: "11px" }}>
-                    {auth.loading ? <CircularProgress size="small"
-                        sx={{ width: "27px", height: "27px" }} /> : "sent otp"}
-
-                </Button>
-                }
-
-
-
-            </form>
-
-
-        </div>
-    )
-}
-
-export default SignupForm
+export default SignupForm;

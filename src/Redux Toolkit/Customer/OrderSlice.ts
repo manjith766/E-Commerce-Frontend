@@ -1,39 +1,32 @@
 // src/slices/orderSlice.ts
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { RootState } from "../Store";
 import { Order, OrderItem, OrderState } from "../../types/orderTypes";
 import { Address } from "../../types/userTypes";
-import { api } from "../../Config/Api";
 import { ApiResponse } from "../../types/authTypes";
+import { orderService } from "../../services/serviceFactory";
 
 const initialState: OrderState = {
   orders: [],
-  orderItem:null,
+  orderItem: null,
   currentOrder: null,
   paymentOrder: null,
   loading: false,
   error: null,
-  orderCanceled:false
+  orderCanceled: false,
 };
-
-const API_URL = "/api/orders";
 
 // Fetch user order history
 export const fetchUserOrderHistory = createAsyncThunk<Order[], string>(
   "orders/fetchUserOrderHistory",
   async (jwt, { rejectWithValue }) => {
     try {
-      const response = await api.get<Order[]>(`${API_URL}/user`, {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      console.log("order history fetched ", response.data);
-      return response.data;
+      const data = await orderService.fetchUserOrderHistory(jwt);
+      return data;
     } catch (error: any) {
-      console.log("error ", error.response);
       return rejectWithValue(
-        error.response.data.error || "Failed to fetch order history"
+        error.response?.data?.error || error.message || "Failed to fetch order history"
       );
     }
   }
@@ -45,100 +38,63 @@ export const fetchOrderById = createAsyncThunk<
   { orderId: number; jwt: string }
 >("orders/fetchOrderById", async ({ orderId, jwt }, { rejectWithValue }) => {
   try {
-    const response = await api.get<Order>(`${API_URL}/${orderId}`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    });
-    console.log("order fetched ", response.data);
-    return response.data;
+    const data = await orderService.fetchOrderById(jwt, orderId);
+    return data;
   } catch (error: any) {
-    console.log("error ", error.response);
-    return rejectWithValue("Failed to fetch order");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch order");
   }
 });
 
 // Create a new order
 export const createOrder = createAsyncThunk<
   any,
-  { address: Address; jwt: string, paymentGateway: string}
->("orders/createOrder", async ({ address, jwt , paymentGateway}, { rejectWithValue }) => {
+  { address: Address; jwt: string; paymentGateway: string }
+>("orders/createOrder", async ({ address, jwt, paymentGateway }, { rejectWithValue }) => {
   try {
-    const response = await api.post<any>(API_URL, address, {
-      headers: { Authorization: `Bearer ${jwt}` },
-      params:{paymentMethod:paymentGateway}
-    });
-    console.log("order created ", response.data);
-    if(response.data.payment_link_url){
-        window.location.href=response.data.payment_link_url
+    const data = await orderService.createOrder(jwt, address, paymentGateway);
+    if (data.payment_link_url) {
+      window.location.href = data.payment_link_url;
     }
-  
-    return response.data;
+    return data;
   } catch (error: any) {
-    console.log("error ", error.response);
-    return rejectWithValue("Failed to create order");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to create order");
   }
 });
 
 export const fetchOrderItemById = createAsyncThunk<
   OrderItem,
-  {  orderItemId: number; jwt: string }
+  { orderItemId: number; jwt: string }
 >("orders/fetchOrderItemById", async ({ orderItemId, jwt }, { rejectWithValue }) => {
   try {
-    const response = await api.get<OrderItem>(`${API_URL}/item/${orderItemId}`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    });
-    console.log("order item fetched ", response.data);
-    return response.data;
+    const data = await orderService.fetchOrderItemById(jwt, orderItemId);
+    return data;
   } catch (error: any) {
-    console.log("error ", error.response);
-    return rejectWithValue("Failed to create order");
+    return rejectWithValue(error.response?.data?.message || error.message || "Failed to fetch order item");
   }
 });
 
-// payment success handler
-
+// Payment success handler
 export const paymentSuccess = createAsyncThunk<
   ApiResponse,
-  { paymentId: string; jwt: string,paymentLinkId:string },
+  { paymentId: string; jwt: string; paymentLinkId: string },
   { rejectValue: string }
 >('orders/paymentSuccess', async ({ paymentId, jwt, paymentLinkId }, { rejectWithValue }) => {
   try {
-    const response = await api.get(`/api/payment/${paymentId}`, {
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-      },
-      params:{paymentLinkId}
-    });
-
-    console.log("payment success ",response.data)
-    
-    return response.data;
+    const data = await orderService.paymentSuccess(jwt, paymentId, paymentLinkId);
+    return data;
   } catch (error: any) {
-    console.log("error ",error.response)
-    if (error.response) {
-      return rejectWithValue(error.response.data.message);
-    }
-    return rejectWithValue('Failed to process payment');
+    return rejectWithValue(error.response?.data?.message || error.message || 'Failed to process payment');
   }
 });
 
-
 export const cancelOrder = createAsyncThunk<Order, any>(
   'orders/cancelOrder',
-  async ( orderId, { rejectWithValue }) => {
+  async (orderId, { rejectWithValue }) => {
     try {
-      const response = await api.put(`${API_URL}/${orderId}/cancel`, {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-        },
-      });
-      console.log("cancel order ",response.data)
-      return response.data;
-    } catch (error:any) {
-      console.log("error ", error.response)
-      if (axios.isAxiosError(error) && error.response) {
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue('An error occurred while cancelling the order.');
+      const data = await orderService.cancelOrder(localStorage.getItem("jwt") || '', orderId);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || error.message || 'An error occurred while cancelling the order.');
     }
   }
 );
@@ -212,14 +168,13 @@ const orderSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // payment success handler
+      // Payment success handler
       .addCase(paymentSuccess.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(paymentSuccess.fulfilled, (state, action) => {
         state.loading = false;
-        console.log('Payment successful:', action.payload);
       })
       .addCase(paymentSuccess.rejected, (state, action) => {
         state.loading = false;
@@ -236,7 +191,7 @@ const orderSlice = createSlice({
           order.id === action.payload.id ? action.payload : order
         );
         state.orderCanceled = true;
-        state.currentOrder = action.payload
+        state.currentOrder = action.payload;
       })
       .addCase(cancelOrder.rejected, (state, action) => {
         state.loading = false;
